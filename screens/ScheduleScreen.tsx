@@ -81,14 +81,6 @@ export default function ScheduleScreen() {
         <Text style={styles.headerText}>Расписание</Text>
       </View>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Поиск..."
-        placeholderTextColor="#012FA7"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-
       <ScrollView contentContainerStyle={styles.tableContainer}>
         {separated.map(dayItem => (
           <View key={dayItem.dayweek} style={styles.dayContainer}>
