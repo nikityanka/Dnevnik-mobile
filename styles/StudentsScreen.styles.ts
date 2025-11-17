@@ -16,8 +16,6 @@ export const styles = StyleSheet.create({
   backButton: { marginRight: 10 },
   backButtonText: { marginTop: 20, color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
   headerText: { marginTop: 20, color: '#FFFFFF', fontSize: 20, fontWeight: 'bold' },
-  
-  // Главные вкладки
   mainTabsContainer: {
     flexDirection: 'row',
     marginTop: 60,
@@ -148,8 +146,6 @@ export const styles = StyleSheet.create({
   highRating: { backgroundColor: '#4CAF50', color: '#FFFFFF' },
   mediumRating: { backgroundColor: '#FFC107', color: '#000000' },
   lowRating: { backgroundColor: '#F44336', color: '#FFFFFF' },
-  
-  // Стили для посещаемости
   attendanceHeaderContainer: {
     minWidth: 55,
     marginHorizontal: 2,
@@ -181,8 +177,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  
-  // Стили для модального окна посещаемости
   attendanceStudentName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -238,13 +232,10 @@ export const styles = StyleSheet.create({
   attendanceButtons: {
     width: '100%',
   },
-  
   loadingText: { fontSize: 18, color: '#000000', textAlign: 'center', marginTop: 50 },
   errorText: { fontSize: 18, color: 'red', textAlign: 'center', marginTop: 50, marginBottom: 20 },
   retryButton: { backgroundColor: '#012FA7', padding: 12, borderRadius: 5, alignSelf: 'center' },
   retryButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
-
-  // МОДАЛЬНОЕ ОКНО
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -263,7 +254,6 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 8,
   },
-
   modalContentScroll: {
     width: '100%',
   },
@@ -289,8 +279,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-
-  // ВКЛАДКИ
   tabContainer: {
     flexDirection: 'row',
     width: '100%',
@@ -317,8 +305,6 @@ export const styles = StyleSheet.create({
     color: '#012FA7',
     fontWeight: 'bold',
   },
-
-  // КОНТЕНТ ВКЛАДКИ РЕДАКТИРОВАНИЯ
   editTabContent: {
     width: '100%',
     alignItems: 'center',
@@ -386,8 +372,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-
-  // КОНТЕНТ ВКЛАДКИ ИНФОРМАЦИЯ
   tabContentScroll: {
     width: '100%',
     maxHeight: 450,
@@ -470,8 +454,6 @@ export const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
-
-  // ФАЙЛЫ
   filesCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
@@ -503,8 +485,6 @@ export const styles = StyleSheet.create({
     color: '#1976D2',
     fontSize: 14,
   },
-
-  // ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
   additionalInfoCard: {
     backgroundColor: '#F8F9FC',
     borderRadius: 12,
@@ -555,8 +535,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-
-  // ЧАТ
   chatInputContainer: {
     width: '100%',
     marginBottom: 15,
@@ -713,8 +691,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
-
-  // МОДАЛЬНОЕ ОКНО СВОЙСТВ СТОЛБЦА
   propertiesCard: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -789,8 +765,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 22,
   },
-
-  // ВЫПАДАЮЩИЙ СПИСОК
   dropdownButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -919,8 +893,6 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 18,
   },
-
-  // Стили для модального окна выбора уроков
   lessonsList: {
     maxHeight: 400,
     width: '100%',

@@ -513,7 +513,6 @@ export default function StudentsScreen() {
   const renderMarksTable = () => (
     <ScrollView style={styles.tableContainer} showsVerticalScrollIndicator={false}>
       <View style={{ flexDirection: 'row' }}>
-        {/* ФИКСИРОВАННЫЙ СТОЛБЕЦ НОМЕРОВ СТРОК */}
         <View style={styles.fixedColumn}>
           <View style={styles.fixedColumnHeader}>
             <Text style={styles.columnHeaderText}>№</Text>
@@ -531,10 +530,8 @@ export default function StudentsScreen() {
           )}
         </View>
 
-        {/* ГОРИЗОНТАЛЬНО ПРОКРУЧИВАЕМАЯ ЧАСТЬ ТАБЛИЦЫ */}
         <ScrollView horizontal showsHorizontalScrollIndicator={true} bounces={false}>
           <View>
-            {/* Заголовок таблицы */}
             <View style={[styles.tableRow, styles.headerRow]}>
               <View style={styles.studentColumnHeader}>
                 <Text style={styles.columnHeaderText}>Студент</Text>
@@ -587,7 +584,6 @@ export default function StudentsScreen() {
               </View>
             </View>
 
-            {/* Строки с студентами */}
             {filteredStudents.map((student) => {
               const avg = calculateAverage(student.ratings);
               return (
@@ -655,7 +651,6 @@ export default function StudentsScreen() {
   const renderAttendanceTable = () => (
     <ScrollView style={styles.tableContainer} showsVerticalScrollIndicator={false}>
       <View style={{ flexDirection: 'row' }}>
-        {/* ФИКСИРОВАННЫЙ СТОЛБЕЦ НОМЕРОВ СТРОК */}
         <View style={styles.fixedColumn}>
           <View style={styles.fixedColumnHeader}>
             <Text style={styles.columnHeaderText}>№</Text>
@@ -673,10 +668,8 @@ export default function StudentsScreen() {
           )}
         </View>
 
-        {/* ГОРИЗОНТАЛЬНО ПРОКРУЧИВАЕМАЯ ЧАСТЬ ТАБЛИЦЫ */}
         <ScrollView horizontal showsHorizontalScrollIndicator={true} bounces={false}>
           <View>
-            {/* Заголовок таблицы */}
             <View style={[styles.tableRow, styles.headerRow]}>
               <View style={styles.studentColumnHeader}>
                 <Text style={styles.columnHeaderText}>Студент</Text>
@@ -691,7 +684,6 @@ export default function StudentsScreen() {
                 ))}
             </View>
 
-            {/* Строки с студентами */}
             {filteredStudentsAttendance.map((student) => (
               <View key={student.id} style={styles.tableRow}>
                 <View style={styles.studentColumn}>

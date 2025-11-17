@@ -1,5 +1,3 @@
-// MarksScreen.tsx
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -96,24 +94,20 @@ export default function MarksScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Фон */}
       <Image
         source={require('../assets/sloy1.png')}
         style={styles.backgroundImage}
         resizeMode="contain"
       />
 
-      {/* Шапка */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>Назад</Text>
         </TouchableOpacity>
         <Text style={styles.headerText}>Оценки</Text>
-        {/* Пустой элемент для выравнивания по центру */}
         <View style={{ width: 60 }} />
       </View>
 
-      {/* Поиск */}
       <TextInput
         style={styles.searchInput}
         placeholder="Поиск по предмету"
@@ -122,20 +116,16 @@ export default function MarksScreen() {
         onChangeText={setSearchQuery}
       />
 
-      {/* ВЕРТИКАЛЬНЫЙ СКРОЛЛ: двигает и левый столбец, и основную таблицу */}
       <ScrollView
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.tableContainer}>
           <View style={{ flexDirection: 'row' }}>
-            {/* ФИКСИРОВАННЫЙ СТОЛБЕЦ НОМЕРОВ СТРОК */}
             <View style={styles.fixedColumn}>
-              {/* Заголовок для столбца № */}
               <View style={styles.fixedColumnHeader}>
                 <Text style={styles.columnHeaderText}>№</Text>
               </View>
 
-              {/* Номера строк — скроллятся только по вертикали вместе с таблицей */}
               {filteredSubjects.length === 0 ? (
                 <View style={styles.fixedRow}>
                   <Text style={styles.fixedRowText}>-</Text>
@@ -149,14 +139,12 @@ export default function MarksScreen() {
               )}
             </View>
 
-            {/* ГОРИЗОНТАЛЬНО ПРОКРУЧИВАЕМАЯ ЧАСТЬ ТАБЛИЦЫ (предмет, оценки, рейтинг) */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={true}
               bounces={false}
             >
               <View>
-                {/* Заголовок таблицы */}
                 <View style={[styles.tableRow, styles.headerRow]}>
                   <View style={styles.studentColumnHeader}>
                     <Text style={styles.columnHeaderText}>Предмет</Text>
@@ -166,7 +154,6 @@ export default function MarksScreen() {
                     <View style={styles.marksHeaderTitleContainer}>
                       <Text style={styles.marksHeaderTitleText}>Оценки</Text>
                     </View>
-                    {/* Здесь больше НЕ рисуем отдельные ячейки под номера столбцов */}
                   </View>
 
                   <View style={styles.ratingColumnHeader}>
@@ -174,7 +161,6 @@ export default function MarksScreen() {
                   </View>
                 </View>
 
-                {/* Строки предметов */}
                 {filteredSubjects.length === 0 ? (
                   <View style={styles.tableRow}>
                     <View style={styles.studentColumn}>
@@ -189,14 +175,12 @@ export default function MarksScreen() {
                   filteredSubjects.map(subject => {
                     const averageRating = calculateAverage(subject.ratings);
 
-                    // Для каждой строки выводим РОВНО столько ячеек, сколько есть оценок
                     const sortedRatings = [...subject.ratings].sort(
                       (a, b) => a.number - b.number,
                     );
 
                     return (
                       <View key={subject.idSt} style={styles.tableRow}>
-                        {/* Название предмета (кликабельно) */}
                         <TouchableOpacity
                           style={styles.studentColumn}
                           onPress={() =>
@@ -212,7 +196,6 @@ export default function MarksScreen() {
                           </Text>
                         </TouchableOpacity>
 
-                        {/* Оценки: без глобальных номеров столбцов, только существующие */}
                         <View style={styles.marksRow}>
                           {sortedRatings.map((rating, index) => {
                             const value = rating.value;
@@ -237,7 +220,6 @@ export default function MarksScreen() {
                           })}
                         </View>
 
-                        {/* Итоговый рейтинг */}
                         <View style={styles.ratingColumn}>
                           <Text
                             style={[

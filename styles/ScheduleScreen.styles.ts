@@ -121,7 +121,6 @@ export const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: 4,
   },
-  // Правая колонка с названием предмета
   subjectContainer: {
     flex: 1,
     alignItems: 'flex-end',

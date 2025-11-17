@@ -67,8 +67,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
-
-  // Таблица
   horizontalScrollContainer: {
     flex: 1,
   },
@@ -227,8 +225,6 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: '#000000',
   },
-
-  // Модалка
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -300,8 +296,6 @@ export const styles = StyleSheet.create({
     width: '100%',
     maxHeight: 450,
   },
-
-  // Инфо вкладка
   mainInfoCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
@@ -463,8 +457,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-
-  // Чат
   chatInputContainer: {
     width: '100%',
     marginBottom: 15,
