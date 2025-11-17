@@ -56,13 +56,15 @@ export default function GroupsScreen() {
     group.numberGroup.toString().toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  console.log(filteredData)
+
   const filteredModalGroups =
     activeTab === 'add'
       ? otherGroups.filter(group =>
-          group.id.toString().toLowerCase().includes(modalSearchQuery.toLowerCase()),
+          group.numberGroup.toString().toLowerCase().includes(modalSearchQuery.toLowerCase()),
         )
       : currentGroups.filter(group =>
-          group.id.toString().toLowerCase().includes(modalSearchQuery.toLowerCase()),
+          group.numberGroup.toString().toLowerCase().includes(modalSearchQuery.toLowerCase()),
         );
 
   const handleGoBack = () => {
