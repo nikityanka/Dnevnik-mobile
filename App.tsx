@@ -21,14 +21,12 @@ global.Buffer = global.Buffer || Buffer;
 const SESSION_KEY = 'user_session';
 
 export default function App() {
-  // Типизация навигации
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [isTeacherMode, setIsTeacherMode] = useState(false); // Переключатель режима
+  const [isTeacherMode, setIsTeacherMode] = useState(false);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
-  // Восстановление сессии при открытии экрана
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -41,12 +39,10 @@ export default function App() {
         };
 
         if (expiresAt && Date.now() > expiresAt) {
-          // Срок действия истёк – чистим
           await AsyncStorage.removeItem(SESSION_KEY);
           return;
         }
 
-        // Сессия валидна – сразу в Home
         navigation.reset({
           index: 0,
           routes: [
@@ -64,7 +60,6 @@ export default function App() {
     restoreSession();
   }, [navigation]);
 
-  // Функция для обработки входа
   const handleLogin = async () => {
     try {
       let user: any;
@@ -91,7 +86,6 @@ export default function App() {
 
           const session = {
             userData: teacherData,
-            // Например, 7 дней жизни сессии
             expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
           };
           await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -149,8 +143,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* Фоновая картинка как в исходном дизайне */}
-      {/* Путь замени на свой, если другой */}
       <Image
         source={require('./assets/sloy1.png')}
         style={styles.backgroundImage}
@@ -162,7 +154,6 @@ export default function App() {
           <Text style={styles.title}>ДНЕВНИК</Text>
         </View>
 
-        {/* Здесь теперь есть marginTop, чтобы вернуть отступ */}
         <Text style={styles.contentText}>Авторизация</Text>
 
         <View style={styles.form}>

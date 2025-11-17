@@ -1,5 +1,3 @@
-// screens/StudentsScreen.tsx
-
 import {
   StyleSheet,
   View,
@@ -13,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 
 import {
@@ -90,7 +88,6 @@ import {
   getRatingBackgroundColor,
 } from '../utils/StudentsScreen.functions';
 
-// Типы для посещаемости
 interface Attendance {
   idLesson: number;
   date: string;
@@ -116,10 +113,8 @@ export default function StudentsScreen() {
   const [error, setError] = useState<string | null>(null);
   const isTeacher = userData?.role === 'teacher';
 
-  // Главные вкладки (оценки/посещаемость)
   const [mainActiveTab, setMainActiveTab] = useState<'marks' | 'attendance'>('marks');
 
-  // Модальное окно для редактирования оценки
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMark, setEditingMark] = useState<{
     studentId: string;
@@ -130,7 +125,6 @@ export default function StudentsScreen() {
   const [inputValue, setInputValue] = useState('');
   const [isAddingMark, setIsAddingMark] = useState(false);
 
-  // Модальное окно для посещаемости
   const [attendanceModalVisible, setAttendanceModalVisible] = useState(false);
   const [editingAttendance, setEditingAttendance] = useState<{
     studentId: string;
@@ -142,7 +136,6 @@ export default function StudentsScreen() {
   const [attendanceStatus, setAttendanceStatus] = useState('');
   const [attendanceComment, setAttendanceComment] = useState('');
 
-  // Новые состояния для вкладок и переписки
   const [activeTab, setActiveTab] = useState<'edit' | 'info'>('edit');
   const [detailedMark, setDetailedMark] = useState<DetailedMark | null>(null);
   const [changes, setChanges] = useState<Change[]>([]);
@@ -158,13 +151,11 @@ export default function StudentsScreen() {
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [commentLoading, setCommentLoading] = useState(false);
 
-  // Состояния для модального окна свойств столбца
   const [columnPropertiesVisible, setColumnPropertiesVisible] = useState(false);
   const [selectedColumnNumber, setSelectedColumnNumber] = useState<number | null>(null);
   const [editableComment, setEditableComment] = useState('');
   const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 
-  // Новые состояния для типов оценок
   const [typeMarks, setTypeMarks] = useState<any[]>([]);
   const [selectedTypeMark, setSelectedTypeMark] = useState<number | null>(null);
   const [isUpdatingTypeMark, setIsUpdatingTypeMark] = useState(false);
@@ -172,13 +163,11 @@ export default function StudentsScreen() {
 
   const [isGradePickerVisible, setIsGradePickerVisible] = useState(false);
 
-  // Новые состояния для выбора урока
   const [lessonsModalVisible, setLessonsModalVisible] = useState(false);
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
 
-  // Функции для загрузки данных
   const loadStudentsData = () => {
     loadStudents({ setLoading, setStudents, setError, groupId, subjectId, userData });
   };
@@ -187,7 +176,6 @@ export default function StudentsScreen() {
     loadAttendances({ setLoading, setStudentsAttendance, setError, groupId, subjectId, userData });
   };
 
-  // Функции для закрытия модальных окон
   const closeModalFunction = () => {
     closeModal(
       setModalVisible,
@@ -228,12 +216,10 @@ export default function StudentsScreen() {
     closeLessonsModal(setLessonsModalVisible, setSelectedLesson);
   };
 
-  // Функция для обновления рейтинга
   const handleUpdateRatingFunction = (studentId: string, markNumber: number, newRating: number | null) => {
     handleUpdateRating(studentId, markNumber, newRating, setStudents);
   };
 
-  // Функция для загрузки уроков
   const loadLessonsFunction = () => {
     loadLessons(subjectId, groupId, userData, setLessons, setLoadingLessons);
   };
@@ -256,7 +242,6 @@ export default function StudentsScreen() {
 
   const gradeOptions = generateGradeOptions();
 
-  // Рендер контента для модального окна редактирования оценки (2 ВКЛАДКИ)
   const renderModalContent = () => {
     if (activeTab === 'edit') {
       return (
@@ -332,10 +317,8 @@ export default function StudentsScreen() {
         </View>
       );
     } else {
-      // Вкладка информации с улучшенным дизайном
       return (
         <ScrollView style={styles.tabContentScroll}>
-          {/* ОСНОВНАЯ ИНФОРМАЦИЯ */}
           <View style={styles.mainInfoCard}>
             <View style={styles.gradeSection}>
               <Text style={styles.sectionLabel}>ОЦЕНКА</Text>
@@ -389,7 +372,6 @@ export default function StudentsScreen() {
             </View>
           </View>
 
-          {/* ПРИКРЕПЛЕННЫЕ ФАЙЛЫ */}
           {detailedMark?.files && detailedMark.files.length > 0 && (
             <View style={styles.filesCard}>
               <Text style={styles.cardTitle}>📎 Прикрепленные файлы</Text>
@@ -407,7 +389,6 @@ export default function StudentsScreen() {
             </View>
           )}
 
-          {/* ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ */}
           <View style={styles.additionalInfoCard}>
             <Text style={styles.cardTitle}>ℹ️ Дополнительная информация</Text>
             <View style={styles.additionalInfoGrid}>
@@ -433,7 +414,6 @@ export default function StudentsScreen() {
             </View>
           </View>
 
-          {/* Поле для нового комментария */}
           <View style={styles.chatInputContainer}>
             <View style={styles.inputRow}>
               <View style={styles.inputWrapper}>
@@ -475,7 +455,6 @@ export default function StudentsScreen() {
             </View>
           </View>
 
-          {/* Отображение выбранных файлов */}
           {selectedFiles.length > 0 && (
             <View style={styles.selectedFilesContainer}>
               <Text style={styles.selectedFilesLabel}>Выбранные файлы:</Text>
@@ -490,7 +469,6 @@ export default function StudentsScreen() {
             </View>
           )}
 
-          {/* Существующая переписка */}
           <View style={styles.chatMessagesContainer}>
             {changes?.filter(change => !(change.files === null || change.comment === null)).length > 0 ? (
               changes
@@ -532,10 +510,10 @@ export default function StudentsScreen() {
     }
   };
 
-  // Рендер таблицы оценок
   const renderMarksTable = () => (
-    <ScrollView style={styles.tableContainer} horizontal>
-      <View>
+    <ScrollView style={styles.tableContainer} showsVerticalScrollIndicator={false}>
+      <View style={{ flexDirection: 'row' }}>
+        {/* ФИКСИРОВАННЫЙ СТОЛБЕЦ НОМЕРОВ СТРОК */}
         <View style={styles.fixedColumn}>
           <View style={styles.fixedColumnHeader}>
             <Text style={styles.columnHeaderText}>№</Text>
@@ -552,127 +530,132 @@ export default function StudentsScreen() {
             ))
           )}
         </View>
-      </View>
 
-      <View>
-        <View style={[styles.tableRow, styles.headerRow]}>
-          <View style={styles.studentColumnHeader}>
-            <Text style={styles.columnHeaderText}>Студент</Text>
-          </View>
-          <View style={styles.toolsColumnHeader}>
-            {filteredStudents.length > 0 &&
-              filteredStudents[0].ratings.map((column, idx) => {
-                return (
-                  <View key={idx} style={styles.markHeaderContainer}>
-                    <TouchableOpacity
-                      onPress={() => openColumnProperties(
-                        column.number,
-                        setSelectedColumnNumber,
-                        setTypeMarkDropdownVisible,
-                        setSelectedTypeMark,
-                        students,
-                        subjectId,
-                        setTypeMarks,
-                        fetchTypeMarks,
-                        fetchPersonalDetailedMark,
-                        setDetailedMark,
-                        setEditableComment,
-                        setColumnPropertiesVisible
-                      )}
-                    >
-                      <Text style={styles.markHeaderButtonText}>⋯</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            {isTeacher && (
-              <TouchableOpacity
-                style={styles.markHeaderContainer}
-                onPress={() => openLessonsModal(
-                  loadLessonsFunction,
-                  setLessonsModalVisible,
-                  subjectId,
-                  groupId,
-                  userData,
-                  setLessons,
-                  setLoadingLessons
-                )}
-              >
-                <Text style={styles.markHeaderButtonText}>+</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.ratingColumnHeader}>
-            <Text style={styles.columnHeaderText}>Рейтинг</Text>
-          </View>
-        </View>
-
-        {filteredStudents.map((student) => {
-          const avg = calculateAverage(student.ratings);
-          return (
-            <View key={student.id} style={styles.tableRow}>
-              <View style={styles.studentColumn}>
-                <Text style={styles.studentName}>{student.initials}</Text>
+        {/* ГОРИЗОНТАЛЬНО ПРОКРУЧИВАЕМАЯ ЧАСТЬ ТАБЛИЦЫ */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} bounces={false}>
+          <View>
+            {/* Заголовок таблицы */}
+            <View style={[styles.tableRow, styles.headerRow]}>
+              <View style={styles.studentColumnHeader}>
+                <Text style={styles.columnHeaderText}>Студент</Text>
               </View>
-              <View style={styles.marksRow}>
-                {student.ratings.map((mark) => (
+              <View style={styles.toolsColumnHeader}>
+                {filteredStudents.length > 0 &&
+                  filteredStudents[0].ratings.map((column, idx) => {
+                    return (
+                      <View key={idx} style={styles.markHeaderContainer}>
+                        <TouchableOpacity
+                          onPress={() => openColumnProperties(
+                            column.number,
+                            setSelectedColumnNumber,
+                            setTypeMarkDropdownVisible,
+                            setSelectedTypeMark,
+                            students,
+                            subjectId,
+                            setTypeMarks,
+                            fetchTypeMarks,
+                            fetchPersonalDetailedMark,
+                            setDetailedMark,
+                            setEditableComment,
+                            setColumnPropertiesVisible
+                          )}
+                        >
+                          <Text style={styles.markHeaderButtonText}>⋯</Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  })}
+                {isTeacher && (
                   <TouchableOpacity
-                    key={mark.number}
-                    disabled={!isTeacher}
-                    onPress={() =>
-                      isTeacher &&
-                      openEditModal(
-                        student.id,
-                        mark.number,
-                        mark.value ?? null,
-                        student.initials,
-                        setEditingMark,
-                        setInputValue,
-                        setIsAddingMark,
-                        setModalVisible,
-                        setActiveTab,
-                        subjectId,
-                        setDetailedMark,
-                        setChanges,
-                        fetchPersonalDetailedMark,
-                        fetchChanges,
-                        userData
-                      )
-                    }
-                    style={[
-                      styles.markCell,
-                      { backgroundColor: getRatingBackgroundColor(mark.value) },
-                    ]}
+                    style={styles.markHeaderContainer}
+                    onPress={() => openLessonsModal(
+                      loadLessonsFunction,
+                      setLessonsModalVisible,
+                      subjectId,
+                      groupId,
+                      userData,
+                      setLessons,
+                      setLoadingLessons
+                    )}
                   >
-                    <Text style={styles.markText}>
-                      {mark.value !== null && mark.value !== undefined ? mark.value.toString() : ''}
-                    </Text>
+                    <Text style={styles.markHeaderButtonText}>+</Text>
                   </TouchableOpacity>
-                )
                 )}
-                <View style={styles.markCell} />
               </View>
-              <View style={styles.ratingColumn}>
-                <Text
-                  style={[
-                    styles.ratingText,
-                    avg >= 4 ? styles.highRating : avg >= 3 ? styles.mediumRating : styles.lowRating,
-                  ]}
-                >
-                  {avg > 0 ? avg.toFixed(1) : '-'}
-                </Text>
+              <View style={styles.ratingColumnHeader}>
+                <Text style={styles.columnHeaderText}>Рейтинг</Text>
               </View>
             </View>
-          );
-        })}
+
+            {/* Строки с студентами */}
+            {filteredStudents.map((student) => {
+              const avg = calculateAverage(student.ratings);
+              return (
+                <View key={student.id} style={styles.tableRow}>
+                  <View style={styles.studentColumn}>
+                    <Text style={styles.studentName}>{student.initials}</Text>
+                  </View>
+                  <View style={styles.marksRow}>
+                    {student.ratings.map((mark) => (
+                      <TouchableOpacity
+                        key={mark.number}
+                        disabled={!isTeacher}
+                        onPress={() =>
+                          isTeacher &&
+                          openEditModal(
+                            student.id,
+                            mark.number,
+                            mark.value ?? null,
+                            student.initials,
+                            setEditingMark,
+                            setInputValue,
+                            setIsAddingMark,
+                            setModalVisible,
+                            setActiveTab,
+                            subjectId,
+                            setDetailedMark,
+                            setChanges,
+                            fetchPersonalDetailedMark,
+                            fetchChanges,
+                            userData
+                          )
+                        }
+                        style={[
+                          styles.markCell,
+                          { backgroundColor: getRatingBackgroundColor(mark.value) },
+                        ]}
+                      >
+                        <Text style={styles.markText}>
+                          {mark.value !== null && mark.value !== undefined ? mark.value.toString() : ''}
+                        </Text>
+                      </TouchableOpacity>
+                    )
+                    )}
+                    <View style={styles.markCell} />
+                  </View>
+                  <View style={styles.ratingColumn}>
+                    <Text
+                      style={[
+                        styles.ratingText,
+                        avg >= 4 ? styles.highRating : avg >= 3 ? styles.mediumRating : styles.lowRating,
+                      ]}
+                    >
+                      {avg > 0 ? avg.toFixed(1) : '-'}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
     </ScrollView>
   );
 
-  // Рендер таблицы посещаемости
   const renderAttendanceTable = () => (
-    <ScrollView style={styles.tableContainer} horizontal>
-      <View>
+    <ScrollView style={styles.tableContainer} showsVerticalScrollIndicator={false}>
+      <View style={{ flexDirection: 'row' }}>
+        {/* ФИКСИРОВАННЫЙ СТОЛБЕЦ НОМЕРОВ СТРОК */}
         <View style={styles.fixedColumn}>
           <View style={styles.fixedColumnHeader}>
             <Text style={styles.columnHeaderText}>№</Text>
@@ -689,60 +672,65 @@ export default function StudentsScreen() {
             ))
           )}
         </View>
-      </View>
 
-      <View>
-        <View style={[styles.tableRow, styles.headerRow]}>
-          <View style={styles.studentColumnHeader}>
-            <Text style={styles.columnHeaderText}>Студент</Text>
-          </View>
-          {filteredStudentsAttendance.length > 0 &&
-            filteredStudentsAttendance[0].attendances.map((attendance, idx) => (
-              <View key={idx} style={styles.attendanceHeaderContainer}>
-                <Text style={styles.attendanceHeaderText}>
-                  {formatLessonDate(attendance.date)}
-                </Text>
+        {/* ГОРИЗОНТАЛЬНО ПРОКРУЧИВАЕМАЯ ЧАСТЬ ТАБЛИЦЫ */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} bounces={false}>
+          <View>
+            {/* Заголовок таблицы */}
+            <View style={[styles.tableRow, styles.headerRow]}>
+              <View style={styles.studentColumnHeader}>
+                <Text style={styles.columnHeaderText}>Студент</Text>
+              </View>
+              {filteredStudentsAttendance.length > 0 &&
+                filteredStudentsAttendance[0].attendances.map((attendance, idx) => (
+                  <View key={idx} style={styles.attendanceHeaderContainer}>
+                    <Text style={styles.attendanceHeaderText}>
+                      {formatLessonDate(attendance.date)}
+                    </Text>
+                  </View>
+                ))}
+            </View>
+
+            {/* Строки с студентами */}
+            {filteredStudentsAttendance.map((student) => (
+              <View key={student.id} style={styles.tableRow}>
+                <View style={styles.studentColumn}>
+                  <Text style={styles.studentName}>{student.initials}</Text>
+                </View>
+                <View style={styles.attendancesRow}>
+                  {student.attendances.map((attendance) => (
+                    <TouchableOpacity
+                      key={attendance.idLesson}
+                      disabled={!isTeacher}
+                      onPress={() =>
+                        isTeacher &&
+                        openAttendanceModal(
+                          student.id,
+                          attendance.idLesson,
+                          attendance.status,
+                          attendance.comment,
+                          student.initials,
+                          setEditingAttendance,
+                          setAttendanceStatus,
+                          setAttendanceComment,
+                          setAttendanceModalVisible
+                        )
+                      }
+                      style={[
+                        styles.attendanceCell,
+                        { backgroundColor: getAttendanceColor(attendance.status) }
+                      ]}
+                    >
+                      <Text style={styles.attendanceText}>
+                        {getAttendanceText(attendance.status)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
             ))}
-        </View>
-
-        {filteredStudentsAttendance.map((student) => (
-          <View key={student.id} style={styles.tableRow}>
-            <View style={styles.studentColumn}>
-              <Text style={styles.studentName}>{student.initials}</Text>
-            </View>
-            <View style={styles.attendancesRow}>
-              {student.attendances.map((attendance) => (
-                <TouchableOpacity
-                  key={attendance.idLesson}
-                  disabled={!isTeacher}
-                  onPress={() =>
-                    isTeacher &&
-                    openAttendanceModal(
-                      student.id,
-                      attendance.idLesson,
-                      attendance.status,
-                      attendance.comment,
-                      student.initials,
-                      setEditingAttendance,
-                      setAttendanceStatus,
-                      setAttendanceComment,
-                      setAttendanceModalVisible
-                    )
-                  }
-                  style={[
-                    styles.attendanceCell,
-                    { backgroundColor: getAttendanceColor(attendance.status) }
-                  ]}
-                >
-                  <Text style={styles.attendanceText}>
-                    {getAttendanceText(attendance.status)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
           </View>
-        ))}
+        </ScrollView>
       </View>
     </ScrollView>
   );
@@ -777,7 +765,6 @@ export default function StudentsScreen() {
         </Text>
       </View>
 
-      {/* Главные вкладки */}
       <View style={styles.mainTabsContainer}>
         <TouchableOpacity 
           style={[styles.mainTab, mainActiveTab === 'marks' && styles.mainTabActive]} 
@@ -803,16 +790,13 @@ export default function StudentsScreen() {
 
       {mainActiveTab === 'marks' ? renderMarksTable() : renderAttendanceTable()}
 
-      {/* МОДАЛЬНОЕ ОКНО ДЛЯ РЕДАКТИРОВАНИЯ ОЦЕНКИ (2 вкладки) */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            {/* Кнопка закрытия */}
             <TouchableOpacity style={styles.closeButtonTop} onPress={closeModalFunction}>
               <Text style={styles.closeButtonTopText}>✕</Text>
             </TouchableOpacity>
 
-            {/* Вкладки */}
             <View style={styles.tabContainer}>
               <TouchableOpacity
                 style={[styles.tab, activeTab === 'edit' && styles.activeTab]}
@@ -828,13 +812,11 @@ export default function StudentsScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Контент вкладок */}
             {renderModalContent()}
           </View>
         </View>
       </Modal>
 
-      {/* МОДАЛЬНОЕ ОКНО ДЛЯ ПОСЕЩАЕМОСТИ */}
       <Modal visible={attendanceModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -909,12 +891,10 @@ export default function StudentsScreen() {
         </View>
       </Modal>
 
-      {/* МОДАЛЬНОЕ ОКНО ДЛЯ СВОЙСТВ СТОЛБЦА */}
       <Modal visible={columnPropertiesVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View style={styles.modalContainer}>
-              {/* Кнопка закрытия */}
               <TouchableOpacity style={styles.closeButtonTop} onPress={closeColumnPropertiesFunction}>
                 <Text style={styles.closeButtonTopText}>✕</Text>
               </TouchableOpacity>
@@ -922,7 +902,6 @@ export default function StudentsScreen() {
               <Text style={styles.modalTitle}>⚙️ Свойства столбца №{selectedColumnNumber}</Text>
 
               <ScrollView style={styles.modalContentScroll}>
-                {/* 1. ТЕМА (редактируемая) */}
                 <View style={styles.propertySection}>
                   <Text style={styles.sectionLabel}>📝 Редактирование свойств</Text>
                   <Text style={styles.propertyLabel}>Тема столбца</Text>
@@ -945,7 +924,6 @@ export default function StudentsScreen() {
                   </TouchableOpacity>
                 </View>
 
-                {/* 2. ТИП УРОКА (выпадающий список) */}
                 <View style={styles.propertySection}>
                   <Text style={styles.sectionLabel}>🏷️ ИЗМЕНИТЬ ТИП УРОКА</Text>
 
@@ -1009,7 +987,6 @@ export default function StudentsScreen() {
                   </TouchableOpacity>
                 </View>
 
-                {/* 3. ТЕКУЩИЕ ЗНАЧЕНИЯ (инфо) */}
                 <View style={styles.infoSection}>
                   <Text style={styles.infoSectionTitle}>ℹ️ Текущие значения</Text>
                   <View style={styles.infoItemVertical}>
@@ -1040,7 +1017,6 @@ export default function StudentsScreen() {
         </View>
       </Modal>
 
-      {/* МОДАЛЬНОЕ ОКНО ВЫБОРА УРОКА */}
       <Modal visible={lessonsModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>

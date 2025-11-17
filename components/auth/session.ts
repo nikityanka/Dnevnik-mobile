@@ -36,7 +36,6 @@ export async function loadSession(): Promise<SessionUser | null> {
 
     return payload.userData;
   } catch {
-    // если вдруг что-то сломалось в формате
     await AsyncStorage.removeItem(SESSION_KEY);
     return null;
   }

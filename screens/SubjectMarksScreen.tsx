@@ -247,7 +247,6 @@ export default function SubjectMarksScreen() {
       );
     }
 
-    // Вкладка "Чат"
     const sortedChanges = [...filteredChanges].sort(
       (a, b) =>
         new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime(),
@@ -430,7 +429,6 @@ export default function SubjectMarksScreen() {
         contentContainerStyle={styles.horizontalScrollContent}
       >
         <View style={styles.tableWrapper}>
-          {/* Шапка таблицы */}
           <View style={styles.tableHeader}>
             <View style={styles.markColumnHeader}>
               <Text style={styles.columnHeaderText}>Оценка</Text>

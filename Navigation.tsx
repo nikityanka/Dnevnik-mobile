@@ -1,4 +1,3 @@
-// Navigation.tsx
 import React from 'react';
 import { Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,7 +17,6 @@ import { RootStackParamList, Student, Teacher } from './components/types';
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-// Стек для «Оценки» у преподавателя (Subjects → Groups → Students → SubjectMarks)
 function TeacherMarksStack({ route }: any) {
   const userData = route.params?.userData as Teacher | undefined;
 
@@ -40,7 +38,6 @@ function TeacherMarksStack({ route }: any) {
         name="Students"
         component={StudentsScreen}
       />
-      {/* При необходимости можно использовать SubjectMarks и для преподавателя */}
       <Stack.Screen
         name="SubjectMarks"
         component={SubjectMarks}
@@ -49,7 +46,6 @@ function TeacherMarksStack({ route }: any) {
   );
 }
 
-// Табы для преподавателя
 type TeacherTabNavigatorProps = {
   userData: Teacher;
 };
@@ -123,7 +119,6 @@ function TeacherTabNavigator({ userData }: TeacherTabNavigatorProps) {
   );
 }
 
-// Табы для студента
 type StudentTabNavigatorProps = {
   userData: Student;
 };
@@ -197,7 +192,6 @@ function StudentTabNavigator({ userData }: StudentTabNavigatorProps) {
   );
 }
 
-// Навигатор, выбирающий набор табов в зависимости от роли пользователя
 function RoleBasedNavigator({ route }: any) {
   const userData = route.params?.userData as Student | Teacher | undefined;
 
@@ -214,7 +208,6 @@ function RoleBasedNavigator({ route }: any) {
   return <TeacherTabNavigator userData={userData as Teacher} />;
 }
 
-// Корневой навигатор приложения
 export default function Navigation() {
   return (
     <NavigationContainer>
@@ -224,13 +217,10 @@ export default function Navigation() {
           headerShown: false,
         }}
       >
-        {/* Экран авторизации */}
         <Stack.Screen name="Login" component={AppScreen} />
 
-        {/* Главный экран с табами в зависимости от роли */}
         <Stack.Screen name="Home" component={RoleBasedNavigator} />
 
-        {/* Дополнительные прямые экраны для совместимости и прямой навигации */}
         <Stack.Screen name="Subjects" component={SubjectsScreen} />
         <Stack.Screen name="Groups" component={GroupsScreen} />
         <Stack.Screen name="Students" component={StudentsScreen} />

@@ -48,7 +48,6 @@ export default function ScheduleScreen() {
     navigation.goBack();
   };
 
-  // Если захочешь фильтрацию по поиску — можно применять её к schedule перед scheduleSeparation.
   const separated = scheduleSeparation(schedule);
 
   if (loading) {
@@ -89,7 +88,6 @@ export default function ScheduleScreen() {
             {dayItem.schedules.length > 0 ? (
               dayItem.schedules.map((scheduleItem, index) => (
                 <View key={index} style={styles.scheduleItem}>
-                  {/* Левая часть: время, преподаватель, аудитория, подгруппа */}
                   <View style={styles.scheduleInfo}>
                     <Text style={styles.scheduleText}>
                       {getTimeByPairNumber(scheduleItem.numPair)}
@@ -117,7 +115,6 @@ export default function ScheduleScreen() {
                     )}
                   </View>
 
-                  {/* Правая часть: название предмета (сокращение) */}
                   <View style={styles.subjectContainer}>
                     <Text style={styles.subjectText}>
                       {makeAbbr(scheduleItem.nameSubject)}

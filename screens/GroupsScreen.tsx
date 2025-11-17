@@ -136,7 +136,6 @@ export default function GroupsScreen() {
         />
       </View>
 
-      {/* Модальное окно управления группами */}
       <Modal visible={showModal} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>

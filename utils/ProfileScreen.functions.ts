@@ -48,7 +48,6 @@ export const handleChangePassword = async ({
       return;
     }
 
-    // Проверку текущего пароля лучше делать на бэке
     setIsLoading(true);
 
     if (isStudent) {

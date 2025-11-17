@@ -83,7 +83,6 @@ export const loadMarks = async ({
   }
 };
 
-// Отдельный экспорт для детального запроса, чтобы использовать в экране
 loadMarks.fetchDetailedMark = async (
   userData: UserData,
   subjectId: number,

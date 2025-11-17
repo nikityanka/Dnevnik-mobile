@@ -1,4 +1,3 @@
-// components/Subject/Item.tsx
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 export default function SubjectCard({ title, onPress }: { title: string; onPress?: () => void }) {

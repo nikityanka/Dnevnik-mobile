@@ -61,8 +61,6 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     color: 'red',
   },
-
-  // Таблица в стиле StudentsScreen
   tableContainer: {
     flex: 1,
     width: '95%',

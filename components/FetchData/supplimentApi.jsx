@@ -42,7 +42,6 @@ export async function uploadFiles(idSupplement, files) {
     const uploadPromises = files.map(async (file) => {
       let fileToUpload;
 
-      // Декодируем имя файла из URL-кодировки
       const decodedFileName = decodeURIComponent(file.name);
 
       if (Platform.OS === 'web') {
@@ -52,7 +51,7 @@ export async function uploadFiles(idSupplement, files) {
       } else {
         fileToUpload = {
           uri: file.uri,
-          name: decodedFileName, // Используем декодированное имя
+          name: decodedFileName,
           type: file.mimeType || 'application/octet-stream',
         };
       }

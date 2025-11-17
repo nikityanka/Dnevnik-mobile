@@ -42,7 +42,6 @@ export default function ProfileScreen() {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Text style={styles.header}>Личный кабинет</Text>
 
-      {/* Профиль */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Профиль</Text>
 
@@ -79,7 +78,6 @@ export default function ProfileScreen() {
         <Text style={styles.value}>{userData.email || '—'}</Text>
       </View>
 
-      {/* Смена пароля */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Смена пароля</Text>
 
@@ -133,7 +131,6 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Выход */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Выход</Text>
         <TouchableOpacity

@@ -48,13 +48,11 @@ export default function SubjectsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Фоновая картинка */}
       <Image
         source={require('../assets/sloy1.png')}
         style={styles.backgroundImage}
       />
 
-      {/* Заголовок с кнопкой "Назад" */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>Назад</Text>
@@ -62,7 +60,6 @@ export default function SubjectsScreen() {
         <Text style={styles.headerText}>Список предметов</Text>
       </View>
 
-      {/* Поле поиска */}
       <TextInput
         style={styles.searchInput}
         placeholder="Поиск..."
@@ -71,7 +68,6 @@ export default function SubjectsScreen() {
         onChangeText={setSearchQuery}
       />
 
-      {/* Список предметов */}
       <View style={styles.content}>
         <FlatList
           data={filteredData}

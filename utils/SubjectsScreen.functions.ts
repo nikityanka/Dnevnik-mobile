@@ -9,7 +9,6 @@ import {
 export type SubjectItem = {
   idSt: number;
   nameSubject: string;
-  // при необходимости сюда можно добавить остальные поля предмета
 };
 
 type UserData = Student | Teacher;

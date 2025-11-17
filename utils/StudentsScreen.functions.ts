@@ -1,5 +1,3 @@
-// utils/StudentsScreen.functions.ts
-
 import { Alert } from 'react-native';
 
 import {
@@ -26,14 +24,11 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
-// ВАЖНО: вся работа с API посещаемости импортируется отсюда,
-// а не реализуется через axios в этом файле
 import {
   fetchAttendances,
   updateAttendance,
 } from '../components/FetchData/fetchAttendance';
 
-// Типы для посещаемости (локальные TS-типы, не API)
 interface Attendance {
   idLesson: number;
   date: string;
@@ -48,7 +43,6 @@ interface StudentAttendance {
   attendances: Attendance[];
 }
 
-// ===================== СТУДЕНТЫ / ОЦЕНКИ =====================
 
 export const loadStudents = async ({
   setLoading,
@@ -87,7 +81,6 @@ export const loadStudents = async ({
   }
 };
 
-// ===================== ПОСЕЩАЕМОСТЬ =====================
 
 export const loadAttendances = async ({
   setLoading,
@@ -100,7 +93,6 @@ export const loadAttendances = async ({
   try {
     setLoading(true);
 
-    // ВАЖНО: используем fetchAttendances из fetchAttendance.jsx
     const attendanceData = await fetchAttendances(groupId, subjectId, userData.id);
 
     const formattedAttendances: StudentAttendance[] = attendanceData
@@ -128,7 +120,6 @@ export const loadAttendances = async ({
   }
 };
 
-// Среднее значение рейтинга
 export const calculateAverage = (ratings: any[]) => {
   if (!ratings || ratings.length === 0) return 0;
   const validRatings = ratings
@@ -138,7 +129,6 @@ export const calculateAverage = (ratings: any[]) => {
   return validRatings.reduce((a, b) => a + b, 0) / validRatings.length;
 };
 
-// ===================== СВОЙСТВА СТОЛБЦА =====================
 
 export const openColumnProperties = async (
   columnNumber: number,
@@ -207,7 +197,6 @@ export const closeColumnProperties = (
   setTypeMarkDropdownVisible(false);
 };
 
-// ===================== УРОКИ ДЛЯ СТОЛБЦА =====================
 
 export const loadLessons = async (
   subjectId: number,
@@ -303,7 +292,6 @@ export const handleUpdateColumnComment = async (
   }
 };
 
-// ===================== ОЦЕНКИ =====================
 
 export const generateGradeOptions = (): number[] => {
   const grades: number[] = [];
@@ -495,7 +483,6 @@ export const openEditModal = async (
   }
 };
 
-// ===================== ПОСЕЩАЕМОСТЬ: МОДАЛКА =====================
 
 export const openAttendanceModal = (
   studentId: string,
@@ -525,7 +512,6 @@ export const handleSaveAttendance = async (
   if (!editingAttendance) return;
 
   try {
-    // ВАЖНО: обновляем через updateAttendance из fetchAttendance.jsx
     await updateAttendance(editingAttendance.studentId, {
       idLesson: editingAttendance.idLesson,
       idTeacher: userData.id,
@@ -556,7 +542,6 @@ export const handleSaveAttendance = async (
   }
 };
 
-// ===================== ЗАКРЫТИЕ МОДАЛОК =====================
 
 export const closeModal = (
   setModalVisible: any,
@@ -594,7 +579,6 @@ export const closeAttendanceModal = (
   setAttendanceComment('');
 };
 
-// ===================== ДОБАВЛЕНИЕ СТОЛБЦА =====================
 
 export const handleAddColumnMark = async (
   subjectId: number,
@@ -633,7 +617,6 @@ export const handleAddColumnMark = async (
   }
 };
 
-// ===================== ОБНОВЛЕНИЕ РЕЙТИНГА =====================
 
 export const handleReset = async (
   editingMark: any,
@@ -672,7 +655,6 @@ export const handleUpdateRating = (
   );
 };
 
-// ===================== ДАТЫ, ИМЕНА, ЦВЕТА =====================
 
 export const formatDateTime = (dateTimeString: string | null | undefined, showTime = true) => {
   if (!dateTimeString) return 'Не указана';
@@ -748,8 +730,6 @@ export const getAttendanceText = (status: string | null) => {
       return '';
   }
 };
-
-// ===================== ФАЙЛЫ / ДОКУМЕНТЫ =====================
 
 export const fixBase64Padding = (base64: string) => {
   const padLength = 4 - (base64.length % 4);
