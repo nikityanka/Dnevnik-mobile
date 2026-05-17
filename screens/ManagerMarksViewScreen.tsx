@@ -53,11 +53,10 @@ export default function ManagerMarksViewScreen() {
 
   const getRatingBackgroundColor = (value: number | null) => {
     if (value === null) return '#f0f0f0';
-    if (value >= 9) return '#4CAF50';
-    if (value >= 7) return '#8BC34A';
-    if (value >= 5) return '#FFC107';
-    if (value >= 4) return '#FF9800';
-    return '#F44336';
+    if (value >= 5) return '#4AB47B';
+    if (value >= 4) return '#4B9B70';
+    if (value >= 3) return '#FFA742';
+    return '#CE3E3E';
   };
 
   const filteredStudents = students.filter(student =>
@@ -105,7 +104,7 @@ export default function ManagerMarksViewScreen() {
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>Назад</Text>
         </TouchableOpacity>
-        <Text style={styles.headerText}>Оценки</Text>
+        <Text style={styles.headerText}>Успеваемость</Text>
       </View>
 
       <View style={{ padding: 15, backgroundColor: '#F0F4FF', marginHorizontal: 20, marginTop: 20, borderRadius: 10 }}>

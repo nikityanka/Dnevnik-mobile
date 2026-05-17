@@ -32,36 +32,30 @@ export default function SecurityWrapper({ children, currentRoute }: SecurityWrap
   });
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
-  // Загрузка настроек при монтировании
   useEffect(() => {
     loadSettings();
   }, []);
 
-  // Применяем защиту после загрузки настроек
   useEffect(() => {
     if (settingsLoaded && Platform.OS !== 'web') {
       initScreenProtection();
     }
   }, [settingsLoaded, settings.blockScreenshots]);
 
-  // Подписка на AppState - используем более надежный подход
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (Platform.OS === 'web') {
         return;
       }
 
-      // Не показываем размытие на экране авторизации
       if (currentRoute === 'Login') {
         return;
       }
 
-      // Если размытие отключено в настройках
       if (!settings.enableBlurOnBackground) {
         return;
       }
 
-      // Показываем blur при любом неактивном состоянии
       if (nextAppState !== 'active') {
         setIsBlurVisible(true);
       } else {
@@ -69,10 +63,8 @@ export default function SecurityWrapper({ children, currentRoute }: SecurityWrap
       }
     };
 
-    // Подписка на изменение состояния приложения
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     
-    // Также проверяем текущее состояние при монтировании
     if (AppState.currentState !== 'active') {
       setIsBlurVisible(true);
     }
@@ -100,7 +92,6 @@ export default function SecurityWrapper({ children, currentRoute }: SecurityWrap
   };
 
   const initScreenProtection = async () => {
-    // Включаем защиту от скриншотов (только для нативных платформ)
     if (ScreenCapture && Platform.OS !== 'web' && settings.blockScreenshots) {
       try {
         await ScreenCapture.preventScreenCaptureAsync();
@@ -109,12 +100,10 @@ export default function SecurityWrapper({ children, currentRoute }: SecurityWrap
     }
   };
 
-  // Для веб-версии - просто возвращаем children без защиты
   if (Platform.OS === 'web') {
     return <>{children}</>;
   }
 
-  // Показываем размытый экран при сворачивании
   if (isBlurVisible && settings.enableBlurOnBackground) {
     const { width, height } = Dimensions.get('window');
     

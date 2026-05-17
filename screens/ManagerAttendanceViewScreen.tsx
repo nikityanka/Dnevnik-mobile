@@ -160,22 +160,22 @@ export default function ManagerAttendanceViewScreen() {
         </Text>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 15, marginVertical: 10, paddingHorizontal: 20 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: 20, height: 20, backgroundColor: '#4CAF50', borderRadius: 3, marginRight: 5 }} />
-          <Text style={{ fontSize: 12, color: '#666' }}>П - Присутствовал</Text>
+      <View style={{ alignItems: 'center', marginVertical: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <View style={{ width: 16, height: 16, backgroundColor: '#4CAF50', borderRadius: 3, marginRight: 5 }} />
+          <Text style={{ fontSize: 11, color: '#666' }}>П - Присутствовал</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <View style={{ width: 16, height: 16, backgroundColor: '#F44336', borderRadius: 3, marginRight: 5 }} />
+          <Text style={{ fontSize: 11, color: '#666' }}>Н - Отсутствовал</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <View style={{ width: 16, height: 16, backgroundColor: '#FFC107', borderRadius: 3, marginRight: 5 }} />
+          <Text style={{ fontSize: 11, color: '#666' }}>О - Опоздал</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: 20, height: 20, backgroundColor: '#F44336', borderRadius: 3, marginRight: 5 }} />
-          <Text style={{ fontSize: 12, color: '#666' }}>Н - Отсутствовал</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: 20, height: 20, backgroundColor: '#FFC107', borderRadius: 3, marginRight: 5 }} />
-          <Text style={{ fontSize: 12, color: '#666' }}>О - Опоздал</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: 20, height: 20, backgroundColor: '#2196F3', borderRadius: 3, marginRight: 5 }} />
-          <Text style={{ fontSize: 12, color: '#666' }}>У - Уважительная</Text>
+          <View style={{ width: 16, height: 16, backgroundColor: '#2196F3', borderRadius: 3, marginRight: 5 }} />
+          <Text style={{ fontSize: 11, color: '#666' }}>У - Уважительная</Text>
         </View>
       </View>
 

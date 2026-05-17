@@ -40,7 +40,6 @@ export default function ProfileScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Настройки безопасности
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     requireBiometrics: false,
     blockScreenshots: true,
@@ -195,11 +194,9 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Настройки безопасности */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>🔒 Безопасность</Text>
         
-        {/* Блокировка скриншотов */}
         {Platform.OS !== 'web' && (
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
@@ -217,13 +214,12 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* Защита при сворачивании */}
         {Platform.OS !== 'web' && (
           <View style={[styles.settingRow, { marginTop: 15 }]}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Размытие при свертывании</Text>
+              <Text style={styles.settingLabel}>Скрытие при свертывании</Text>
               <Text style={styles.settingDescription}>
-                Показывать размытый экран при сворачивании приложения
+                Скрывать экран при сворачивании приложения
               </Text>
             </View>
             <Switch

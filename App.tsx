@@ -104,7 +104,6 @@ export default function App() {
             ],
           });
         } else if (userRole === 'manager') {
-          // Вход как заведующий
           const managerData: Manager = {
             id: Number(user.id),
             name: user.name,
@@ -133,7 +132,6 @@ export default function App() {
             ],
           });
         } else {
-          // Вход как преподаватель
           const teacherData: Teacher = {
             id: Number(user.id),
             name: user.name,
