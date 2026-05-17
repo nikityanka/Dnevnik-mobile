@@ -1,41 +1,41 @@
-import axios from 'axios';
+import api, { setAuthToken } from '../api';
 
-const API_BASE_URL = 'http://192.168.1.52:8080/api/v1';
-
-export const fetchStudent = async(login, password) => {
-  const response = await axios.get(`${API_BASE_URL}/students/login/${login}/password/${password}`);
-  return response.data;
+export const fetchStudent = async (login, password) => {
+  try {
+    const response = await api.get(`/students/login/${login}/password/${password}`);
+    if (response.data.token) {
+      await setAuthToken(response.data.token);
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Student login error:', error);
+    throw error;
+  }
 };
 
-export const fetchTeacher = async(login, password) => {
-  const response = await axios.get(`${API_BASE_URL}/staffs/login/${login}/password/${password}`);
-  return response.data;
+export const fetchTeacher = async (login, password) => {
+  try {
+    const response = await api.get(`/staffs/login/${login}/password/${password}`);
+    if (response.data.token) {
+      await setAuthToken(response.data.token);
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Teacher login error:', error);
+    throw error;
+  }
 };
 
 export const updateStudentPassword = async (id, newPassword) => {
-  const body = {
-    id,
-    password: newPassword,
-  };
-
-  const response = await axios.patch(
-    `${API_BASE_URL}/students/update`,
-    body,
-  );
-
+  const response = await api.patch('/students/update', { id, password: newPassword });
   return response.data;
 };
 
 export const updateTeacherPassword = async (id, newPassword) => {
-  const body = {
-    id,
-    password: newPassword,
-  };
-
-  const response = await axios.patch(
-    `${API_BASE_URL}/staffs/update`,
-    body,
-  );
-
+  const response = await api.patch('/staffs/update', { id, password: newPassword });
   return response.data;
+};
+
+export const logout = async () => {
+  await setAuthToken(null);
 };

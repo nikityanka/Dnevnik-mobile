@@ -88,6 +88,44 @@ export default function MarksScreen() {
         ]}
       >
         <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          onPress={() => {
+            setLoading(true);
+            loadMarks({
+              userData: userData as Student,
+              setMarks,
+              setError,
+              setLoading,
+            });
+          }}
+          style={{ marginTop: 20, padding: 10, backgroundColor: '#012FA7', borderRadius: 5 }}
+        >
+          <Text style={{ color: '#fff' }}>Повторить попытку</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (marks.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={require('../assets/sloy1.png')}
+          style={styles.backgroundImage}
+          resizeMode="contain"
+        />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+            <Text style={styles.backButtonText}>Назад</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Оценки</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18, color: '#012FA7' }}>
+            У вас пока нет оценок
+          </Text>
+        </View>
       </View>
     );
   }

@@ -2,13 +2,13 @@ import { Dispatch, SetStateAction } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Student, Teacher } from '../components/types';
+import { Student, Teacher, Manager } from '../components/types';
 import {
   updateStudentPassword,
   updateTeacherPassword,
 } from '../components/FetchData/fetchLogin';
 
-type UserData = Student | Teacher;
+type UserData = Student | Teacher | Manager;
 
 const SESSION_KEY = 'user_session';
 

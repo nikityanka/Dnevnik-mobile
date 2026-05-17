@@ -1,29 +1,37 @@
+import api from '../api';
+import { ApiException, handleApiError } from './errorHandler';
 
-import axios from 'axios';
-
-const API_BASE_URL = 'http://192.168.1.52:8080/api/v1';
-
-export const fetchAttendances = async (groupId, subjectId, teacherId) => {
+export const fetchAttendances = async (groupId, subjectId, teacherId, signal) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/attendances/group/${groupId}/st/${subjectId}/teacher/${teacherId}`,
+    const response = await api.get(
+      `/attendances/group/${groupId}/st/${subjectId}/teacher/${teacherId}`,
+      { signal }
     );
     return response.data;
   } catch (error) {
+    if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+      throw new ApiException('Запрос отменён', 'ABORTED', 0);
+    }
     console.error('Error fetching attendances:', error);
-    throw error;
+    const handled = handleApiError(error);
+    throw new ApiException(handled.message, undefined, error.response?.status);
   }
 };
 
-export const updateAttendance = async (studentId, data) => {
+export const updateAttendance = async (studentId, data, signal) => {
   try {
-    const response = await axios.patch(
-      `${API_BASE_URL}/attendances/student/${studentId}`,
+    const response = await api.patch(
+      `/attendances/student/${studentId}`,
       data,
+      { signal }
     );
     return response.data;
   } catch (error) {
+    if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+      throw new ApiException('Запрос отменён', 'ABORTED', 0);
+    }
     console.error('Error updating attendance:', error);
-    throw error;
+    const handled = handleApiError(error);
+    throw new ApiException(handled.message, undefined, error.response?.status);
   }
 };

@@ -4,16 +4,17 @@ import {
   TextInput,
   ScrollView,
   Text,
-  Image,
   TouchableOpacity,
   Modal,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState, useEffect, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 
+import { styles } from '../styles/StudentsScreen.styles';
 import {
   updateMark,
   addColumnMark,
@@ -22,10 +23,9 @@ import {
   updateMarkType,
   fetchLessons,
   addColumnMarkWithLesson,
-} from '../components/FetchData/marksApi';
-
-import { fetchMarks, fetchPersonalDetailedMark } from '../components/FetchData/fetchMarks';
-
+} from '../components/FetchData/marksApi.jsx';
+import { fetchPersonalDetailedMark, fetchPersonalMarks } from '../components/FetchData/fetchMarks';
+import { fetchChanges } from '../components/FetchData/supplimentApi';
 import {
   RoutePropType,
   RootStackParamList,
@@ -35,79 +35,52 @@ import {
   StudentWithMarks,
   DetailedMark,
   Change,
+  TypeMark,
+  Lesson,
+  SimplifiedStudentAttendance,
 } from '../components/types';
-
-import {
-  addChange,
-  fetchChanges,
-  updateSupplement,
-  uploadFiles,
-  downloadFile,
-} from '../components/FetchData/supplimentApi';
-
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
-
-
-import { styles } from '../styles/StudentsScreen.styles';
 
 import {
   loadStudents,
   loadAttendances,
-  calculateAverage,
-  openColumnProperties,
-  closeColumnProperties,
-  loadLessons,
-  openLessonsModal,
-  closeLessonsModal,
-  handleAddColumnWithLesson,
-  formatLessonDate,
-  handleUpdateColumnComment,
-  generateGradeOptions,
-  handleUpdateMarkType,
-  handleSaveGrade,
-  handleDeleteColumn,
-  openEditModal,
-  openAttendanceModal,
-  handleSaveAttendance,
   closeModal,
   closeAttendanceModal,
-  handleAddColumnMark,
-  handleReset,
-  handleUpdateRating,
-  formatDateTime,
+  closeColumnProperties,
+  closeLessonsModal,
+  calculateAverage,
   formatTeacherName,
   getAttendanceColor,
   getAttendanceText,
-  fixBase64Padding,
-  getFile,
+  getRatingBackgroundColor,
+  openColumnProperties,
+  handleUpdateRating,
+  openEditModal,
+  handleSaveGrade,
+  handleReset,
+  handleAddColumnMark,
+  handleDeleteColumn,
+  openAttendanceModal,
+  handleSaveAttendance,
+  handleAddColumnWithLesson,
+  loadLessons,
+  openLessonsModal,
+  handleUpdateColumnComment,
+  handleUpdateMarkType,
+  formatLessonDate,
+  generateGradeOptions,
+  handleSendComment,
   pickFiles,
   removeFile,
-  handleSendComment,
-  getRatingBackgroundColor,
+  getFile,
+  formatDateTime,
 } from '../utils/StudentsScreen.functions';
-
-interface Attendance {
-  idLesson: number;
-  date: string;
-  status: string | null;
-  comment: string | null;
-  studentName?: string;
-}
-
-interface StudentAttendance {
-  id: string;
-  initials: string;
-  attendances: Attendance[];
-}
 
 export default function StudentsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RoutePropType<'Students'>>();
   const { userData, subjectId, groupId } = route.params;
   const [students, setStudents] = useState<SimplifiedStudent[]>([]);
-  const [studentsAttendance, setStudentsAttendance] = useState<StudentAttendance[]>([]);
+  const [studentsAttendance, setStudentsAttendance] = useState<SimplifiedStudentAttendance[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -156,7 +129,7 @@ export default function StudentsScreen() {
   const [editableComment, setEditableComment] = useState('');
   const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 
-  const [typeMarks, setTypeMarks] = useState<any[]>([]);
+  const [typeMarks, setTypeMarks] = useState<TypeMark[]>([]);
   const [selectedTypeMark, setSelectedTypeMark] = useState<number | null>(null);
   const [isUpdatingTypeMark, setIsUpdatingTypeMark] = useState(false);
   const [typeMarkDropdownVisible, setTypeMarkDropdownVisible] = useState(false);
@@ -164,9 +137,9 @@ export default function StudentsScreen() {
   const [isGradePickerVisible, setIsGradePickerVisible] = useState(false);
 
   const [lessonsModalVisible, setLessonsModalVisible] = useState(false);
-  const [lessons, setLessons] = useState<any[]>([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   const loadStudentsData = () => {
     loadStudents({ setLoading, setStudents, setError, groupId, subjectId, userData });

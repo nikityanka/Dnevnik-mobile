@@ -33,6 +33,34 @@ export interface Teacher {
   role: 'teacher';
 }
 
+export interface Manager {
+  id: number;
+  lastName: string;
+  name: string;
+  patronymic: string;
+  login: string;
+  password: string;
+  email: string | null;
+  staffPosition: {
+    id: number;
+    name: string;
+  }[];
+  role: 'manager';
+}
+
+export interface Group {
+  id: number;
+  numberGroup: number;
+  admissionYear: number;
+  idCurator: number | null;
+  curatorName: string | null;
+  course: number;
+  formEducation: string;
+  profile: string;
+  specialty: string;
+  studentCount: number;
+}
+
 // Интерфейсы для оценок
 /*
 export interface MarkItem {
@@ -87,6 +115,22 @@ export interface File {
   name: string;
 }
 
+export interface TypeMark {
+  id: number;
+  name: string;
+  weight: number;
+  idSt: number;
+}
+
+export interface Lesson {
+  id: number;
+  date: string;
+  dayWeek: string;
+  typeWeek: string;
+  numPair: number;
+  replacement: boolean;
+}
+
 export interface DetailedMark {
   value: number | null;
   number: number;
@@ -97,14 +141,13 @@ export interface DetailedMark {
   patronymicTeacher: string | null;
   idSupplement: number | null;
   comment: string | null;
-  files: any[];
+  files: File[];
   numberWeek: number;
   dayWeek: string;
   typeWeek: string;
   numPair: number;
   replacement: boolean;
   changes: Change[];
-  // Для обратной совместимости
   idChanges: number[];
   date?: string | null;
   homework?: string | null;
@@ -116,7 +159,7 @@ export interface Change {
   action: string;
   idSupplement: number | null;
   comment: string | null;
-  files: any[] | null;
+  files: File[] | null;
   teacherOrStudent: boolean;
   newValue: number | null;
 }
@@ -125,6 +168,24 @@ export interface SimplifiedStudent {
   id: string;
   initials: string;
   ratings: MarkItem[];
+}
+
+export interface LoadStudentsParams {
+  setLoading: (value: boolean) => void;
+  setStudents: (students: SimplifiedStudent[]) => void;
+  setError: (error: string | null) => void;
+  groupId: string;
+  subjectId: number;
+  userData: { id: number; lastName: string; name: string; patronymic?: string };
+}
+
+export interface LoadAttendancesParams {
+  setLoading: (value: boolean) => void;
+  setStudentsAttendance: (students: SimplifiedStudentAttendance[]) => void;
+  setError: (error: string | null) => void;
+  groupId: string;
+  subjectId: number;
+  userData: { id: number; lastName: string; name: string; patronymic?: string };
 }
 
 export interface StudentRowProps {
@@ -150,6 +211,13 @@ export interface NameSubjectTeachersDTO {
   teachers: TeacherShort[];
 }
 
+export interface STTeachersDTO {
+  idSt: number;
+  idSubject: number;
+  nameSubject: string;
+  teachers: TeacherShort[];
+}
+
 export interface TeacherShort {
   idTeacher: number;
   lastnameTeacher: string;
@@ -158,22 +226,262 @@ export interface TeacherShort {
 }
 
 export interface PersonalMark {
-  nameSubjectTeachersDTO: NameSubjectTeachersDTO;
+  STTeachersDTO?: STTeachersDTO;
+  stteachersDTO?: STTeachersDTO; // API возвращает с маленькой буквы
+  nameSubjectTeachersDTO?: NameSubjectTeachersDTO; // для обратной совместимости
   marksBySt: MarkItem[] | null[] | null;
   certification: any | null;
+}
+
+export interface Attendance {
+  idLesson: number;
+  date: string;
+  status: string | null;
+  comment: string | null;
+  studentName?: string;
+}
+
+export interface SimplifiedStudentAttendance {
+  id: string;
+  initials: string;
+  attendances: Attendance[];
+}
+
+export interface FullStudentAttendance {
+  idStudent: number;
+  lastName: string;
+  name: string;
+  patronymic: string;
+  attendances: Attendance[];
+}
+
+export interface UserData {
+  id: number;
+  lastName: string;
+  name: string;
+  patronymic?: string;
+  role?: string;
+}
+
+export interface ColumnPropertiesParams {
+  columnNumber: number;
+  setSelectedColumnNumber: (value: number | null) => void;
+  setTypeMarkDropdownVisible: (value: boolean) => void;
+  setSelectedTypeMark: (value: number | null) => void;
+  students: SimplifiedStudent[];
+  subjectId: number;
+  setTypeMarks: (types: TypeMark[]) => void;
+  fetchTypeMarksFn: (subjectId: number) => Promise<TypeMark[]>;
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>;
+  setDetailedMark: (mark: DetailedMark | null) => void;
+  setEditableComment: (comment: string) => void;
+  setColumnPropertiesVisible: (value: boolean) => void;
+}
+
+export interface CloseColumnPropertiesParams {
+  setColumnPropertiesVisible: (value: boolean) => void;
+  setSelectedColumnNumber: (value: number | null) => void;
+  setEditableComment: (value: string) => void;
+  setDetailedMark: (value: DetailedMark | null) => void;
+  setTypeMarks: (value: TypeMark[]) => void;
+  setSelectedTypeMark: (value: number | null) => void;
+  setTypeMarkDropdownVisible: (value: boolean) => void;
+}
+
+export interface LoadLessonsParams {
+  subjectId: number;
+  groupId: string;
+  userData: UserData;
+  setLessons: (lessons: Lesson[]) => void;
+  setLoadingLessons: (value: boolean) => void;
+}
+
+export interface OpenLessonsModalParams {
+  loadLessonsFn: (
+    subjectId: number,
+    groupId: string,
+    userData: UserData,
+    setLessons: (lessons: Lesson[]) => void,
+    setLoadingLessons: (value: boolean) => void,
+  ) => Promise<void>;
+  setLessonsModalVisible: (value: boolean) => void;
+  subjectId: number;
+  groupId: string;
+  userData: UserData;
+  setLessons: (lessons: Lesson[]) => void;
+  setLoadingLessons: (value: boolean) => void;
+}
+
+export interface CloseLessonsModalParams {
+  setLessonsModalVisible: (value: boolean) => void;
+  setSelectedLesson: (value: Lesson | null) => void;
+}
+
+export interface HandleAddColumnWithLessonParams {
+  selectedLesson: Lesson | null;
+  subjectId: number;
+  groupId: string;
+  userData: UserData;
+  loadStudentsFn: () => Promise<void>;
+  closeLessonsModalFn: () => void;
+}
+
+export interface HandleUpdateColumnCommentParams {
+  detailedMark: DetailedMark | null;
+  selectedColumnNumber: number | null;
+  editableComment: string;
+  setIsUpdatingComment: (value: boolean) => void;
+  setDetailedMark: (mark: DetailedMark | null) => void;
+}
+
+export interface HandleUpdateMarkTypeParams {
+  selectedTypeMark: number | null;
+  selectedColumnNumber: number | null;
+  students: SimplifiedStudent[];
+  userData: UserData;
+  groupId: string;
+  subjectId: number;
+  setIsUpdatingTypeMark: (value: boolean) => void;
+  setDetailedMark: (mark: DetailedMark | null) => void;
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>;
+  setTypeMarkDropdownVisible: (value: boolean) => void;
+}
+
+export interface HandleSaveGradeParams {
+  selectedGrade: number;
+  editingMark: { studentId: string; markNumber: number; value: number | null; studentName: string } | null;
+  subjectId: number;
+  handleUpdateRatingFn: (studentId: string, markNumber: number, newRating: number | null) => void;
+  closeModalFn: () => void;
+}
+
+export interface HandleDeleteColumnParams {
+  groupIdParam: string;
+  subjectIdParam: number;
+  teacherId: number;
+  columnNumber: number | undefined;
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>;
+  closeColumnPropertiesFn: () => void;
+}
+
+export interface OpenEditModalParams {
+  studentId: string;
+  markNumber: number;
+  value: number | null;
+  studentName: string;
+  setEditingMark: (mark: { studentId: string; markNumber: number; value: number | null; studentName: string } | null) => void;
+  setInputValue: (value: string) => void;
+  setIsAddingMark: (value: boolean) => void;
+  setModalVisible: (value: boolean) => void;
+  setActiveTab: (tab: string) => void;
+  subjectId: number;
+  setDetailedMark: (mark: DetailedMark | null) => void;
+  setChanges: (changes: Change[]) => void;
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>;
+  fetchChangesFn: (subjectId: number, studentId: string, markNumber: number) => Promise<Change[]>;
+  userData: UserData;
+}
+
+export interface OpenAttendanceModalParams {
+  studentId: string;
+  idLesson: number;
+  status: string | null;
+  comment: string | null;
+  studentName: string;
+  setEditingAttendance: (att: { studentId: string; idLesson: number; status: string | null; comment: string | null; studentName: string }) => void;
+  setAttendanceStatus: (value: string) => void;
+  setAttendanceComment: (value: string) => void;
+  setAttendanceModalVisible: (value: boolean) => void;
+}
+
+export interface HandleSaveAttendanceParams {
+  editingAttendance: { studentId: string; idLesson: number; status: string | null; comment: string | null; studentName: string } | null;
+  attendanceStatus: string;
+  attendanceComment: string;
+  userData: UserData;
+  setStudentsAttendance: React.Dispatch<React.SetStateAction<SimplifiedStudentAttendance[]>>;
+  setAttendanceModalVisible: (value: boolean) => void;
+}
+
+export interface CloseModalParams {
+  setModalVisible: (value: boolean) => void;
+  setEditingMark: (value: null) => void;
+  setInputValue: (value: string) => void;
+  setIsAddingMark: (value: boolean) => void;
+  setActiveTab: (value: string) => void;
+  setDetailedMark: (value: null) => void;
+  setChanges: (value: Change[]) => void;
+  setNewComment: (value: string) => void;
+  setSelectedFiles: (value: File[]) => void;
+  setIsGradePickerVisible: (value: boolean) => void;
+}
+
+export interface CloseAttendanceModalParams {
+  setAttendanceModalVisible: (value: boolean) => void;
+  setEditingAttendance: (value: null) => void;
+  setAttendanceStatus: (value: string) => void;
+  setAttendanceComment: (value: string) => void;
+}
+
+export interface HandleAddColumnMarkParams {
+  subjectId: number;
+  groupId: string;
+  students: SimplifiedStudent[];
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>;
+}
+
+export interface HandleResetParams {
+  editingMark: { studentId: string; markNumber: number; value: number | null; studentName: string } | null;
+  subjectId: number;
+  handleUpdateRatingFn: (studentId: string, markNumber: number, newRating: number | null) => void;
+  closeModalFn: () => void;
+}
+
+export interface HandleUpdateRatingParams {
+  studentId: string;
+  markNumber: number;
+  newRating: number | null;
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>;
+}
+
+export interface EditingMark {
+  studentId: string;
+  markNumber: number;
+  value: number | null;
+  studentName: string;
+}
+
+export interface EditingAttendance {
+  studentId: string;
+  idLesson: number;
+  status: string | null;
+  comment: string | null;
+  studentName: string;
+}
+
+export interface SelectedFile {
+  uri: string;
+  name: string;
+  mimeType: string;
+  size?: number;
 }
 
 // Типизация параметров навигации
 export type RootStackParamList = {
   Login: undefined;
-  Home: { userData: Teacher | Student };
+  Home: { userData: Teacher | Student | Manager };
   Subjects: { userData: Teacher | Student };
   Groups: { subjectId: number; userData: Teacher };
   Students: { subjectId: number; groupId: string; userData: Teacher | Student };
   Marks: { userData: Student };
   SubjectMarks: { userData: Student; subjectId: number; subjectName: string };
   Schedule: { userData: Teacher | Student };
-  Profile: { userData: Teacher | Student };
+  Profile: { userData: Teacher | Student | Manager };
+  ManagerGroups: { userData: Manager };
+  ManagerGroupDetails: { groupId: string; groupNumber: string; userData: Manager };
+  ManagerMarksView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; userData: Manager };
+  ManagerAttendanceView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; userData: Manager };
+  ManagerStudentDetail: { studentId: number; userData: Manager };
 };
 
 export type TabParamList = {

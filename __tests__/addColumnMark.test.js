@@ -1,7 +1,8 @@
-import axios from 'axios';
+import api from '../components/api';
 import { addColumnMark } from '../components/FetchData/marksApi';
 
-jest.mock('axios');
+jest.mock('../components/api');
+jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('marks API – addColumnMark', () => {
   afterEach(() => {
@@ -9,7 +10,7 @@ describe('marks API – addColumnMark', () => {
   });
 
   it('отправляет правильный POST-запрос на добавление колонки оценок', async () => {
-    axios.post.mockResolvedValue({
+    api.post.mockResolvedValue({
       status: 200,
       data: { success: true },
     });
@@ -19,17 +20,20 @@ describe('marks API – addColumnMark', () => {
 
     await addColumnMark(subjectId, groupId);
 
-    expect(axios.post).toHaveBeenCalledWith(
-      'http://192.168.1.52:8080/api/v1/marks/save/group',
+    expect(api.post).toHaveBeenCalledWith(
+      '/marks/save/group',
       {
         idGroup: groupId,
         idSt: subjectId,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      { signal: undefined }
     );
+  });
+
+  it('выбрасывает ошибку при неудачном запросе', async () => {
+    const error = new Error('Server error');
+    api.post.mockRejectedValue(error);
+
+    await expect(addColumnMark(10, 5)).rejects.toThrow();
   });
 });

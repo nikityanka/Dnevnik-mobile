@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useState } from 'react';
-import { updateMark, addMark, deleteMark } from '../FetchData/marksApi';
+import { updateMark } from '../FetchData/marksApi';
 import { StudentRowProps } from '../types';
 
 export default function StudentRow({ student, onUpdateRating, subjectId, groupId, onDataUpdate }: StudentRowProps) {
@@ -55,12 +55,13 @@ export default function StudentRow({ student, onUpdateRating, subjectId, groupId
 
   const handleAddMark = async () => {
     const parsedRating = parseFloat(inputValue);
-    if (!isNaN(parsedRating) && parsedRating >= 1 && parsedRating <= 5) {
+    if (!isNaN(parsedRating) && parsedRating >= 1 && parsedRating <= 10) {
       try {
         const existingNumbers = student.ratings.map((m: any) => m.number);
         const newMarkNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
 
-        await addMark(student.id, subjectId, parsedRating, groupId, newMarkNumber);
+        // await addMark(student.id, subjectId, parsedRating, groupId, newMarkNumber);
+        Alert.alert('Информация', 'Функция добавления оценки временно недоступна');
 
         if (onUpdateRating) {
           onUpdateRating(student.id, newMarkNumber, parsedRating);
@@ -79,7 +80,7 @@ export default function StudentRow({ student, onUpdateRating, subjectId, groupId
         Alert.alert('Ошибка', 'Не удалось добавить оценку.');
       }
     } else {
-      Alert.alert('Ошибка', 'Оценка должна быть числом от 1 до 5.');
+      Alert.alert('Ошибка', 'Оценка должна быть числом от 1 до 10.');
     }
   };
 
@@ -87,7 +88,8 @@ export default function StudentRow({ student, onUpdateRating, subjectId, groupId
     if (!editingMark) return;
 
     try {
-      await deleteMark(student.id, subjectId, editingMark.number);
+      // await deleteMark(student.id, subjectId, editingMark.number);
+      Alert.alert('Информация', 'Функция удаления оценки временно недоступна');
 
       if (onUpdateRating) {
         onUpdateRating(student.id, editingMark.number, null);

@@ -77,4 +77,33 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  // Стили для настроек безопасности
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  settingInfo: {
+    flex: 1,
+    marginRight: 10,
+  },
+  settingLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+  },
+  settingDescription: {
+    fontSize: 12,
+    color: '#666666',
+    marginTop: 2,
+  },
+  warningText: {
+    fontSize: 12,
+    color: '#FF9800',
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
 });

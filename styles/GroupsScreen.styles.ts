@@ -216,4 +216,198 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  courseFilterContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  courseButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#E3ECFF',
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#012FA7',
+  },
+  courseButtonActive: {
+    backgroundColor: '#012FA7',
+  },
+  courseButtonText: {
+    color: '#012FA7',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  courseButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  groupCard: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#012FA7',
+    borderWidth: 2,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  groupCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  groupCardTitle: {
+    color: '#012FA7',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  courseBadge: {
+    backgroundColor: '#012FA7',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  courseBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  groupCardDetails: {
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    paddingTop: 12,
+  },
+  groupCardInfo: {
+    color: '#333',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  mainTabsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#E3ECFF',
+    marginHorizontal: 20,
+    borderRadius: 10,
+    padding: 4,
+  },
+  mainTab: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  mainTabActive: {
+    backgroundColor: '#012FA7',
+  },
+  mainTabText: {
+    color: '#012FA7',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  mainTabTextActive: {
+    color: '#FFFFFF',
+  },
+  mainInfoCard: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  sectionLabel: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  themeSection: {
+    marginVertical: 12,
+  },
+  themeBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  themeText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  infoItem: {
+    flex: 1,
+  },
+  infoValue: {
+    fontSize: 14,
+    color: '#012FA7',
+    fontWeight: '500',
+  },
+  gradeSection: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  gradeBadge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  gradeBadgeHigh: {
+    backgroundColor: '#4CAF50',
+  },
+  gradeBadgeMedium: {
+    backgroundColor: '#FFC107',
+  },
+  gradeBadgeLow: {
+    backgroundColor: '#F44336',
+  },
+  gradeBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  additionalInfoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  infoGridItem: {
+    width: '50%',
+    paddingVertical: 8,
+  },
+  infoGridLabel: {
+    fontSize: 12,
+    color: '#666',
+  },
+  infoGridValue: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#012FA7',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#012FA7',
+    marginBottom: 12,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: '#666',
+    width: 120,
+  },
 });

@@ -1,34 +1,51 @@
-import axios from 'axios';
+import api from '../api';
 
-const API_BASE_URL = "http://192.168.1.52:8080/api/v1";
+interface GroupBasic {
+  id: number;
+  numberGroup: number;
+}
 
-export async function fetchGroups() {
+interface GroupWithId {
+  id: number;
+  numberGroup: number;
+  admissionYear: number;
+  idCurator: number | null;
+  course: number;
+  formEducation: string;
+  profile: string;
+  specialty: string;
+  departmentHead?: number;
+  currentSemester?: number;
+}
+
+export async function fetchGroups(): Promise<GroupBasic[]> {
   try {
-    const response = await axios.get(`${API_BASE_URL}/groups`);
-
-    let tempArray = [];
-    response.data.forEach((group) => {
-      tempArray.push({id: group.id, numberGroup: group.numberGroup});
-    });
-
-    return tempArray;
+    const response = await api.get('/groups');
+    return response.data.map((group: GroupWithId) => ({
+      id: group.id,
+      numberGroup: group.numberGroup,
+    }));
   } catch (error) {
-    console.error('Ошибка при получении оценок:', error);
+    console.error('Ошибка при получении групп:', error);
     throw error; 
   }
 }
 
-export async function fetchGroupsBySubject(teacherId) {
+export async function fetchGroupsBySubject(teacherId: number): Promise<GroupBasic[]> {
   try {
-    const response = await axios.get(`${API_BASE_URL}/st/teacherGroups/${teacherId}`);
-
+    const response = await api.get(`/st/teacherGroups/${teacherId}`);
+    
+    const allGroupIds = response.data.flatMap((group: { idGroups: number[] }) => group.idGroups);
+    const uniqueGroupIds = [...new Set(allGroupIds)];
+    
     const groupsData = await Promise.all(
-      response.data.flatMap(group =>
-        group.idGroups.map(async groupId => {
-          const numberGroupResponse = await axios.get(`${API_BASE_URL}/groups/id/${groupId}`);
-          return { id: groupId, numberGroup: numberGroupResponse.data.numberGroup };
-        })
-      )
+      uniqueGroupIds.map(async (groupId: number) => {
+        const numberGroupResponse = await api.get(`/groups/id/${groupId}`);
+        return { 
+          id: groupId, 
+          numberGroup: numberGroupResponse.data.numberGroup 
+        };
+      })
     );
 
     return groupsData;
@@ -38,21 +55,20 @@ export async function fetchGroupsBySubject(teacherId) {
   }
 }
 
-
-export async function addGroup(idSt, groupNumber) {
+export async function addGroup(idSt: number, groupNumber: number): Promise<void> {
   try {
-    await axios.post(`${API_BASE_URL}/st/add/id/${idSt}/group/${groupNumber}`);
+    await api.post(`/st/add/id/${idSt}/group/${groupNumber}`);
   } catch (error) {
-    console.error('Ошибка при добавлении оценки:', error);
+    console.error('Ошибка при добавлении группы:', error);
     throw error; 
   }
 }
 
-export async function delGroup(idSt, groupNumber) {
+export async function delGroup(idSt: number, groupNumber: number): Promise<void> {
   try {
-    await axios.delete(`${API_BASE_URL}/st/delete/id/${idSt}/group/${groupNumber}`);
+    await api.delete(`/st/delete/id/${idSt}/group/${groupNumber}`);
   } catch (error) {
-    console.error('Ошибка при добавлении оценки:', error);
+    console.error('Ошибка при удалении группы:', error);
     throw error; 
   }
 }

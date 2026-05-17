@@ -123,7 +123,6 @@ export default function GroupsScreen() {
             <GroupCard
               title={item.numberGroup.toString()}
               onPress={() => {
-                console.log('Переданный ID группы:', item.id.toString());
                 navigation.navigate('Students', {
                   subjectId: subjectId,
                   groupId: item.id.toString(),

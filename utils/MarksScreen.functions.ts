@@ -33,24 +33,35 @@ export const loadMarks = async ({
 
     const marksData: PersonalMark[] = await fetchPersonalMarks(userData);
 
-    const marksWithSubjects: SubjectWithMarks[] = marksData.map(mark => {
-      const ratings: MarkItem[] =
-        mark.marksBySt && Array.isArray(mark.marksBySt)
-          ? mark.marksBySt
-              .filter((m): m is MarkItem => m !== null && m !== undefined)
-              .map(m => ({
-                number: m.number,
-                value: m.value !== null ? m.value : null,
-              }))
-          : [];
+    const marksWithSubjects: SubjectWithMarks[] = marksData
+      .filter(mark => {
+        // Проверяем наличие данных о предмете (API может вернуть с разным регистром)
+        const subjectData = mark.STTeachersDTO || mark.stteachersDTO || mark.nameSubjectTeachersDTO;
+        const isValid = subjectData && subjectData.idSt && subjectData.nameSubject;
+        
+        return isValid;
+      })
+      .map(mark => {
+        // Используем любой доступный вариант поля
+        const subjectData = mark.STTeachersDTO || mark.stteachersDTO || mark.nameSubjectTeachersDTO!;
+        
+        const ratings: MarkItem[] =
+          mark.marksBySt && Array.isArray(mark.marksBySt)
+            ? mark.marksBySt
+                .filter((m): m is MarkItem => m !== null && m !== undefined)
+                .map(m => ({
+                  number: m.number,
+                  value: m.value !== null ? m.value : null,
+                }))
+            : [];
 
-      return {
-        id: userData.id,
-        idSt: mark.nameSubjectTeachersDTO.idSt,
-        subjectName: mark.nameSubjectTeachersDTO.nameSubject,
-        ratings,
-      };
-    });
+        return {
+          id: userData.id,
+          idSt: subjectData.idSt,
+          subjectName: subjectData.nameSubject,
+          ratings,
+        };
+      });
 
     setMarks(marksWithSubjects);
     setError(null);

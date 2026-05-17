@@ -1,10 +1,17 @@
-import axios from 'axios';
+import api from '../components/api';
 import { fetchStudent } from '../components/FetchData/fetchLogin';
 
-jest.mock('axios');
-const mockedAxios = axios;
+jest.mock('../components/api', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+  },
+  setAuthToken: jest.fn(),
+}));
 
-describe('fetchStudent – успешный логин', () => {
+jest.spyOn(console, 'error').mockImplementation(() => {});
+
+describe('fetchStudent', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -15,16 +22,23 @@ describe('fetchStudent – успешный логин', () => {
       name: 'Иван',
       lastName: 'Иванов',
       login: 'student1',
-      password: '12345',
+      token: 'some-token',
     };
 
-    mockedAxios.get.mockResolvedValue({ data: mockStudent });
+    api.get.mockResolvedValue({ data: mockStudent });
 
     const data = await fetchStudent('student1', '12345');
 
-    expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://192.168.1.52:8080/api/v1/students/login/student1/password/12345'
+    expect(api.get).toHaveBeenCalledWith(
+      '/students/login/student1/password/12345'
     );
     expect(data).toEqual(mockStudent);
+  });
+
+  it('выбрасывает ошибку при неудачном запросе', async () => {
+    const error = new Error('Network error');
+    api.get.mockRejectedValue(error);
+
+    await expect(fetchStudent('student1', '12345')).rejects.toThrow();
   });
 });

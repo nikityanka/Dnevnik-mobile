@@ -62,9 +62,6 @@ export const loadMarks = async ({
       fetchSubjectName(subjectId),
     ]);
 
-    console.log('Marks data:', marksData);
-    console.log('Subject name:', nameData);
-
     const formattedMarks: ExtendedMark[] = marksData.map((mark: DetailedMark) => ({
       ...mark,
       teacher: mark.lastNameTeacher
@@ -183,15 +180,12 @@ export const getFile = async (id: number, fileName: string) => {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    console.log('File saved to', fileUri);
-
     const isSharingAvailable = await Sharing.isAvailableAsync();
     if (isSharingAvailable) {
       await Sharing.shareAsync(fileUri);
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(fileUri);
-        console.log('Temporary file deleted:', fileUri);
       }
     } else {
       Alert.alert(
@@ -207,7 +201,6 @@ export const getFile = async (id: number, fileName: string) => {
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
         if (fileInfo.exists) {
           await FileSystem.deleteAsync(fileUri);
-          console.log('Temporary file deleted after error:', fileUri);
         }
       } catch (delErr) {
         console.error('Error deleting temp file:', delErr);
@@ -232,8 +225,6 @@ export const pickFiles = async ({
       copyToCacheDirectory: true,
     });
 
-    console.log('Document picker result:', result);
-
     if (!result.canceled && result.assets) {
       const maxFiles = 3;
       const filesToAdd = result.assets.slice(0, maxFiles - selectedFiles.length);
@@ -250,7 +241,6 @@ export const pickFiles = async ({
           mimeType: file.mimeType || 'application/octet-stream',
           size: file.size,
         };
-        console.log('Selected file:', selectedFile);
         return selectedFile;
       });
 

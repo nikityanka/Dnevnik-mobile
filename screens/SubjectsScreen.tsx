@@ -80,7 +80,6 @@ export default function SubjectsScreen() {
               onPress={() => {
                 if (userData.role === 'teacher') {
                   const teacher = userData as Teacher;
-                  console.log('item.idSt', item.idSt);
                   navigation.navigate('Groups', {
                     subjectId: item.idSt,
                     userData: teacher,

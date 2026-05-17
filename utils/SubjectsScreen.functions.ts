@@ -41,7 +41,6 @@ export const loadSubjects = async ({
       fetchedSubjects = await fetchStudentSubjects(student.numberGroup);
     }
 
-    console.log('Загруженные предметы:', fetchedSubjects);
     setSubjects(fetchedSubjects || []);
   } catch (error) {
     console.error('Ошибка при загрузке предметов:', error);

@@ -1,7 +1,7 @@
-import axios from 'axios';
+import api from '../components/api';
 import { deleteMarkColumn } from '../components/FetchData/marksApi';
 
-jest.mock('axios');
+jest.mock('../components/api');
 
 describe('marks API – deleteMarkColumn', () => {
   afterEach(() => {
@@ -11,7 +11,7 @@ describe('marks API – deleteMarkColumn', () => {
   it('отправляет правильный DELETE-запрос и возвращает данные ответа', async () => {
     const mockResponseData = { success: true };
 
-    axios.delete.mockResolvedValue({
+    api.delete.mockResolvedValue({
       status: 200,
       data: mockResponseData,
     });
@@ -23,8 +23,8 @@ describe('marks API – deleteMarkColumn', () => {
 
     const data = await deleteMarkColumn(idGroup, idSt, idTeacher, number);
 
-    expect(axios.delete).toHaveBeenCalledWith(
-      'http://192.168.1.52:8080/api/v1/marks/delete/group',
+    expect(api.delete).toHaveBeenCalledWith(
+      '/marks/delete/group',
       {
         data: {
           idGroup,
@@ -32,12 +32,17 @@ describe('marks API – deleteMarkColumn', () => {
           idTeacher,
           number,
         },
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        signal: undefined,
       }
     );
 
     expect(data).toEqual(mockResponseData);
+  });
+
+  it('выбрасывает ошибку при неудачном DELETE-запросе', async () => {
+    const error = new Error('Not found');
+    api.delete.mockRejectedValue(error);
+
+    await expect(deleteMarkColumn(5, 10, 3, 1)).rejects.toThrow();
   });
 });

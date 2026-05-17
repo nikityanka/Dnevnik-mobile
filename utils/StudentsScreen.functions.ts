@@ -1,14 +1,32 @@
 import { Alert } from 'react-native';
+import {
+  Attendance,
+  SimplifiedStudentAttendance,
+  MarkItem,
+  SimplifiedStudent,
+  LoadStudentsParams,
+  LoadAttendancesParams,
+  UserData,
+  TypeMark,
+  DetailedMark,
+  Lesson,
+  Change,
+  File,
+  EditingMark,
+  EditingAttendance,
+  SelectedFile,
+} from '../components/types';
+import { ApiException, getErrorMessage } from '../components/FetchData/errorHandler';
 
 import {
   updateMark,
   addColumnMark,
-  deleteMarkColumn,
   fetchTypeMarks,
   updateMarkType,
   fetchLessons,
   addColumnMarkWithLesson,
 } from '../components/FetchData/marksApi';
+import { deleteMarkColumn } from '../components/FetchData/marksApi.jsx';
 
 import { fetchMarks, fetchPersonalDetailedMark } from '../components/FetchData/fetchMarks';
 
@@ -29,20 +47,21 @@ import {
   updateAttendance,
 } from '../components/FetchData/fetchAttendance';
 
-interface Attendance {
-  idLesson: number;
-  date: string;
-  status: string | null;
-  comment: string | null;
-  studentName?: string;
+interface FetchMarksResponse {
+  idStudent: number;
+  lastName: string;
+  name: string;
+  patronymic?: string;
+  marks: MarkItem[] | null;
 }
 
-interface StudentAttendance {
-  id: string;
-  initials: string;
+interface FetchAttendancesResponse {
+  idStudent: number;
+  lastName: string;
+  name: string;
+  patronymic?: string;
   attendances: Attendance[];
 }
-
 
 export const loadStudents = async ({
   setLoading,
@@ -51,36 +70,35 @@ export const loadStudents = async ({
   groupId,
   subjectId,
   userData,
-}: any) => {
+}: LoadStudentsParams & { signal?: AbortSignal }) => {
   try {
     setLoading(true);
     const marksData = await fetchMarks(parseInt(groupId, 10), subjectId, userData.id);
 
-    const formattedStudents = marksData
-      .map((student: any) => ({
+    const formattedStudents: SimplifiedStudent[] = marksData
+      .map((student: FetchMarksResponse) => ({
         id: student.idStudent.toString(),
         initials: `${student.lastName} ${student.name[0]}.`,
         ratings: student.marks
           ? student.marks
-              .filter((mark: any) => mark !== null && mark !== undefined)
-              .map((mark: any) => ({
+              .filter((mark) => mark !== null && mark !== undefined)
+              .map((mark) => ({
                 number: mark?.number ?? 0,
                 value: mark?.value ?? null,
               }))
           : [],
       }))
-      .sort((a: any, b: any) => parseInt(a.id, 10) - parseInt(b.id, 10));
+      .sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
 
     setStudents(formattedStudents);
     setError(null);
   } catch (err) {
-    console.log(err);
-    setError('Не удалось загрузить студентов. Попробуйте позже.');
+    if (err instanceof ApiException && err.code === 'ABORTED') return;
+    setError(getErrorMessage(err));
   } finally {
     setLoading(false);
   }
 };
-
 
 export const loadAttendances = async ({
   setLoading,
@@ -89,18 +107,18 @@ export const loadAttendances = async ({
   groupId,
   subjectId,
   userData,
-}: any) => {
+}: LoadAttendancesParams & { signal?: AbortSignal }) => {
   try {
     setLoading(true);
 
     const attendanceData = await fetchAttendances(groupId, subjectId, userData.id);
 
-    const formattedAttendances: StudentAttendance[] = attendanceData
-      .map((student: any) => ({
+    const formattedAttendances: SimplifiedStudentAttendance[] = attendanceData
+      .map((student: FetchAttendancesResponse) => ({
         id: student.idStudent.toString(),
         initials: `${student.lastName} ${student.name[0]}.`,
         attendances: student.attendances
-          ? student.attendances.map((att: any) => ({
+          ? student.attendances.map((att) => ({
               idLesson: att.idLesson,
               date: att.date,
               status: att.status,
@@ -108,19 +126,19 @@ export const loadAttendances = async ({
             }))
           : [],
       }))
-      .sort((a : any, b : any) => parseInt(a.id, 10) - parseInt(b.id, 10));
+      .sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
 
     setStudentsAttendance(formattedAttendances);
     setError(null);
   } catch (err) {
-    console.log(err);
-    setError('Не удалось загрузить посещаемость. Попробуйте позже.');
+    if (err instanceof ApiException && err.code === 'ABORTED') return;
+    setError(getErrorMessage(err));
   } finally {
     setLoading(false);
   }
 };
 
-export const calculateAverage = (ratings: any[]) => {
+export const calculateAverage = (ratings: MarkItem[]) => {
   if (!ratings || ratings.length === 0) return 0;
   const validRatings = ratings
     .filter((m) => m.value !== null && m.value !== undefined)
@@ -129,20 +147,19 @@ export const calculateAverage = (ratings: any[]) => {
   return validRatings.reduce((a, b) => a + b, 0) / validRatings.length;
 };
 
-
 export const openColumnProperties = async (
   columnNumber: number,
-  setSelectedColumnNumber: any,
-  setTypeMarkDropdownVisible: any,
-  setSelectedTypeMark: any,
-  students: any,
+  setSelectedColumnNumber: (value: number | null) => void,
+  setTypeMarkDropdownVisible: (value: boolean) => void,
+  setSelectedTypeMark: (value: number | null) => void,
+  students: SimplifiedStudent[],
   subjectId: number,
-  setTypeMarks: any,
-  fetchTypeMarksFn: any,
-  fetchPersonalDetailedMarkFn: any,
-  setDetailedMark: any,
-  setEditableComment: any,
-  setColumnPropertiesVisible: any,
+  setTypeMarks: (types: TypeMark[]) => void,
+  fetchTypeMarksFn: (subjectId: number) => Promise<TypeMark[]>,
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>,
+  setDetailedMark: (mark: DetailedMark | null) => void,
+  setEditableComment: (comment: string) => void,
+  setColumnPropertiesVisible: (value: boolean) => void,
 ) => {
   setSelectedColumnNumber(columnNumber);
   setTypeMarkDropdownVisible(false);
@@ -152,8 +169,8 @@ export const openColumnProperties = async (
     const types = await fetchTypeMarksFn(subjectId);
     setTypeMarks(types);
 
-    const firstStudent = students.find((s: any) =>
-      s.ratings.some((r: any) => r.number === columnNumber),
+    const firstStudent = students.find((s) =>
+      s.ratings.some((r) => r.number === columnNumber),
     );
 
     if (firstStudent) {
@@ -166,12 +183,13 @@ export const openColumnProperties = async (
       setDetailedMark(markDetails);
       setEditableComment(markDetails.comment || '');
 
-      const currentType = types.find((t: any) => t.name === markDetails.typeMark);
+      const currentType = types.find((t) => t.name === markDetails.typeMark);
       if (currentType) {
         setSelectedTypeMark(currentType.id);
       }
     }
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error fetching column details:', error);
     setEditableComment('');
   }
@@ -180,13 +198,13 @@ export const openColumnProperties = async (
 };
 
 export const closeColumnProperties = (
-  setColumnPropertiesVisible: any,
-  setSelectedColumnNumber: any,
-  setEditableComment: any,
-  setDetailedMark: any,
-  setTypeMarks: any,
-  setSelectedTypeMark: any,
-  setTypeMarkDropdownVisible: any,
+  setColumnPropertiesVisible: (value: boolean) => void,
+  setSelectedColumnNumber: (value: number | null) => void,
+  setEditableComment: (value: string) => void,
+  setDetailedMark: (value: DetailedMark | null) => void,
+  setTypeMarks: (value: TypeMark[]) => void,
+  setSelectedTypeMark: (value: number | null) => void,
+  setTypeMarkDropdownVisible: (value: boolean) => void,
 ) => {
   setColumnPropertiesVisible(false);
   setSelectedColumnNumber(null);
@@ -197,51 +215,60 @@ export const closeColumnProperties = (
   setTypeMarkDropdownVisible(false);
 };
 
-
 export const loadLessons = async (
   subjectId: number,
   groupId: string,
-  userData: any,
-  setLessons: any,
-  setLoadingLessons: any,
+  userData: UserData,
+  setLessons: (lessons: Lesson[]) => void,
+  setLoadingLessons: (value: boolean) => void,
 ) => {
   try {
     setLoadingLessons(true);
     const lessonsData = await fetchLessons(subjectId, groupId, userData.id);
     setLessons(lessonsData);
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error loading lessons:', error);
-    Alert.alert('Ошибка', 'Не удалось загрузить список уроков');
+    Alert.alert('Ошибка', getErrorMessage(error));
   } finally {
     setLoadingLessons(false);
   }
 };
 
 export const openLessonsModal = async (
-  loadLessonsFn: any,
-  setLessonsModalVisible: any,
+  loadLessonsFn: (
+    subjectId: number,
+    groupId: string,
+    userData: UserData,
+    setLessons: (lessons: Lesson[]) => void,
+    setLoadingLessons: (value: boolean) => void,
+  ) => Promise<void>,
+  setLessonsModalVisible: (value: boolean) => void,
   subjectId: number,
   groupId: string,
-  userData: any,
-  setLessons: any,
-  setLoadingLessons: any,
+  userData: UserData,
+  setLessons: (lessons: Lesson[]) => void,
+  setLoadingLessons: (value: boolean) => void,
 ) => {
   await loadLessonsFn(subjectId, groupId, userData, setLessons, setLoadingLessons);
   setLessonsModalVisible(true);
 };
 
-export const closeLessonsModal = (setLessonsModalVisible: any, setSelectedLesson: any) => {
+export const closeLessonsModal = (
+  setLessonsModalVisible: (value: boolean) => void,
+  setSelectedLesson: (value: Lesson | null) => void,
+) => {
   setLessonsModalVisible(false);
   setSelectedLesson(null);
 };
 
 export const handleAddColumnWithLesson = async (
-  selectedLesson: any,
+  selectedLesson: Lesson | null,
   subjectId: number,
   groupId: string,
-  userData: any,
-  loadStudentsFn: any,
-  closeLessonsModalFn: any,
+  userData: UserData,
+  loadStudentsFn: () => Promise<void>,
+  closeLessonsModalFn: () => void,
 ) => {
   if (!selectedLesson) {
     Alert.alert('Ошибка', 'Выберите урок для добавления');
@@ -254,8 +281,9 @@ export const handleAddColumnWithLesson = async (
     Alert.alert('Успех', 'Столбец оценок успешно добавлен');
     closeLessonsModalFn();
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error adding column with lesson:', error);
-    Alert.alert('Ошибка', 'Не удалось добавить столбец оценок');
+    Alert.alert('Ошибка', getErrorMessage(error));
   }
 };
 
@@ -265,11 +293,11 @@ export const formatLessonDate = (dateString: string) => {
 };
 
 export const handleUpdateColumnComment = async (
-  detailedMark: any,
+  detailedMark: DetailedMark | null,
   selectedColumnNumber: number | null,
   editableComment: string,
-  setIsUpdatingComment: any,
-  setDetailedMark: any,
+  setIsUpdatingComment: (value: boolean) => void,
+  setDetailedMark: (mark: DetailedMark | null) => void,
 ) => {
   if (!detailedMark?.idSupplement || !selectedColumnNumber) {
     Alert.alert('Ошибка', 'Невозможно обновить тему столбца');
@@ -284,14 +312,14 @@ export const handleUpdateColumnComment = async (
       comment: editableComment,
     });
     Alert.alert('Успех', 'Тема столбца успешно обновлена');
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error updating column comment:', error);
-    Alert.alert('Ошибка', 'Не удалось обновить тему столбца');
+    Alert.alert('Ошибка', getErrorMessage(error));
   } finally {
     setIsUpdatingComment(false);
   }
 };
-
 
 export const generateGradeOptions = (): number[] => {
   const grades: number[] = [];
@@ -304,14 +332,14 @@ export const generateGradeOptions = (): number[] => {
 export const handleUpdateMarkType = async (
   selectedTypeMark: number | null,
   selectedColumnNumber: number | null,
-  students: any[],
-  userData: any,
+  students: SimplifiedStudent[],
+  userData: UserData,
   groupId: string,
   subjectId: number,
-  setIsUpdatingTypeMark: any,
-  setDetailedMark: any,
-  fetchPersonalDetailedMarkFn: any,
-  setTypeMarkDropdownVisible: any,
+  setIsUpdatingTypeMark: (value: boolean) => void,
+  setDetailedMark: (mark: DetailedMark | null) => void,
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>,
+  setTypeMarkDropdownVisible: (value: boolean) => void,
 ) => {
   if (!selectedTypeMark || !selectedColumnNumber) {
     Alert.alert('Ошибка', 'Выберите тип урока');
@@ -345,8 +373,9 @@ export const handleUpdateMarkType = async (
     Alert.alert('Успех', 'Тип урока успешно обновлен');
     setTypeMarkDropdownVisible(false);
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error updating mark type:', error);
-    Alert.alert('Ошибка', 'Не удалось обновить тип урока');
+    Alert.alert('Ошибка', getErrorMessage(error));
   } finally {
     setIsUpdatingTypeMark(false);
   }
@@ -354,10 +383,10 @@ export const handleUpdateMarkType = async (
 
 export const handleSaveGrade = async (
   selectedGrade: number,
-  editingMark: any,
+  editingMark: EditingMark | null,
   subjectId: number,
-  handleUpdateRatingFn: any,
-  closeModalFn: any,
+  handleUpdateRatingFn: (studentId: string, markNumber: number, newRating: number | null) => void,
+  closeModalFn: () => void,
 ) => {
   if (!editingMark) return;
 
@@ -366,8 +395,9 @@ export const handleSaveGrade = async (
     handleUpdateRatingFn(editingMark.studentId, editingMark.markNumber, selectedGrade);
     closeModalFn();
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error saving grade:', error);
-    Alert.alert('Ошибка', 'Не удалось сохранить оценку');
+    Alert.alert('Ошибка', getErrorMessage(error));
   }
 };
 
@@ -376,18 +406,10 @@ export const handleDeleteColumn = async (
   subjectIdParam: number,
   teacherId: number,
   columnNumber: number | undefined,
-  setStudents: any,
-  closeColumnPropertiesFn: any,
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>,
+  closeColumnPropertiesFn: () => void,
 ) => {
-  console.log('handleDeleteColumn called with:', {
-    groupId: groupIdParam,
-    subjectId: subjectIdParam,
-    teacherId,
-    columnNumber,
-  });
-
   if (!columnNumber) {
-    console.error('Invalid columnNumber:', columnNumber);
     Alert.alert('Ошибка', 'Номер колонки не определён');
     return;
   }
@@ -403,17 +425,18 @@ export const handleDeleteColumn = async (
         onPress: async () => {
           try {
             await deleteMarkColumn(groupIdParam, subjectIdParam, teacherId, columnNumber);
-            setStudents((prevStudents: any) =>
-              prevStudents.map((student: any) => ({
+            setStudents((prevStudents) =>
+              prevStudents.map((student) => ({
                 ...student,
-                ratings: student.ratings.filter((mark: any) => mark.number !== columnNumber),
+                ratings: student.ratings.filter((mark) => mark.number !== columnNumber),
               })),
             );
             Alert.alert('Успешно', 'Колонка удалена');
             closeColumnPropertiesFn();
           } catch (error) {
+            if (error instanceof ApiException && error.code === 'ABORTED') return;
             console.error('Error deleting column:', error);
-            Alert.alert('Ошибка', `Не удалось удалить колонку: ${error}`);
+            Alert.alert('Ошибка', getErrorMessage(error));
           }
         },
       },
@@ -426,17 +449,17 @@ export const openEditModal = async (
   markNumber: number,
   value: number | null,
   studentName: string,
-  setEditingMark: any,
-  setInputValue: any,
-  setIsAddingMark: any,
-  setModalVisible: any,
-  setActiveTab: any,
+  setEditingMark: (mark: EditingMark | null) => void,
+  setInputValue: (value: string) => void,
+  setIsAddingMark: (value: boolean) => void,
+  setModalVisible: (value: boolean) => void,
+  setActiveTab: (tab: string) => void,
   subjectId: number,
-  setDetailedMark: any,
-  setChanges: any,
-  fetchPersonalDetailedMarkFn: any,
-  fetchChangesFn: any,
-  userData: any,
+  setDetailedMark: (mark: DetailedMark | null) => void,
+  setChanges: (changes: Change[]) => void,
+  fetchPersonalDetailedMarkFn: (studentData: { id: number }, subjectId: number, columnNumber: number) => Promise<DetailedMark>,
+  fetchChangesFn: (subjectId: number, studentId: string, markNumber: number) => Promise<Change[]>,
+  userData: UserData,
 ) => {
   setEditingMark({ studentId, markNumber, value, studentName });
   setInputValue(value !== null && value !== undefined ? value.toString() : '');
@@ -456,16 +479,17 @@ export const openEditModal = async (
     const changesData = await fetchChangesFn(subjectId, studentId, markNumber);
     setChanges(changesData);
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error fetching detailed mark:', error);
 
-    const baseDetailedMark = {
+    const baseDetailedMark: DetailedMark = {
       value,
       number: markNumber,
       dateLesson: null,
       typeMark: 'Оценка',
       lastNameTeacher: userData.lastName || null,
       nameTeacher: userData.name || null,
-      patronymicTeacher: (userData as any).patronymic || null,
+      patronymicTeacher: userData.patronymic || null,
       idSupplement: null,
       comment: null,
       files: [],
@@ -483,17 +507,16 @@ export const openEditModal = async (
   }
 };
 
-
 export const openAttendanceModal = (
   studentId: string,
   idLesson: number,
   status: string | null,
   comment: string | null,
   studentName: string,
-  setEditingAttendance: any,
-  setAttendanceStatus: any,
-  setAttendanceComment: any,
-  setAttendanceModalVisible: any,
+  setEditingAttendance: (att: EditingAttendance) => void,
+  setAttendanceStatus: (value: string) => void,
+  setAttendanceComment: (value: string) => void,
+  setAttendanceModalVisible: (value: boolean) => void,
 ) => {
   setEditingAttendance({ studentId, idLesson, status, comment, studentName });
   setAttendanceStatus(status || '');
@@ -502,12 +525,12 @@ export const openAttendanceModal = (
 };
 
 export const handleSaveAttendance = async (
-  editingAttendance: any,
+  editingAttendance: EditingAttendance | null,
   attendanceStatus: string,
   attendanceComment: string,
-  userData: any,
-  setStudentsAttendance: any,
-  setAttendanceModalVisible: any,
+  userData: UserData,
+  setStudentsAttendance: React.Dispatch<React.SetStateAction<SimplifiedStudentAttendance[]>>,
+  setAttendanceModalVisible: (value: boolean) => void,
 ) => {
   if (!editingAttendance) return;
 
@@ -519,10 +542,10 @@ export const handleSaveAttendance = async (
       comment: attendanceComment,
     });
 
-    setStudentsAttendance((prev: any) =>
-      prev.map((student: any) => {
+    setStudentsAttendance((prev) =>
+      prev.map((student) => {
         if (student.id === editingAttendance.studentId) {
-          const updatedAttendances = student.attendances.map((att: any) => {
+          const updatedAttendances = student.attendances.map((att) => {
             if (att.idLesson === editingAttendance.idLesson) {
               return { ...att, status: attendanceStatus, comment: attendanceComment };
             }
@@ -537,23 +560,23 @@ export const handleSaveAttendance = async (
     setAttendanceModalVisible(false);
     Alert.alert('Успех', 'Посещаемость обновлена');
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error saving attendance:', error);
-    Alert.alert('Ошибка', 'Не удалось сохранить посещаемость');
+    Alert.alert('Ошибка', getErrorMessage(error));
   }
 };
 
-
 export const closeModal = (
-  setModalVisible: any,
-  setEditingMark: any,
-  setInputValue: any,
-  setIsAddingMark: any,
-  setActiveTab: any,
-  setDetailedMark: any,
-  setChanges: any,
-  setNewComment: any,
-  setSelectedFiles: any,
-  setIsGradePickerVisible: any,
+  setModalVisible: (value: boolean) => void,
+  setEditingMark: (value: null) => void,
+  setInputValue: (value: string) => void,
+  setIsAddingMark: (value: boolean) => void,
+  setActiveTab: (value: string) => void,
+  setDetailedMark: (value: null) => void,
+  setChanges: (value: Change[]) => void,
+  setNewComment: (value: string) => void,
+  setSelectedFiles: (value: SelectedFile[]) => void,
+  setIsGradePickerVisible: (value: boolean) => void,
 ) => {
   setModalVisible(false);
   setEditingMark(null);
@@ -568,10 +591,10 @@ export const closeModal = (
 };
 
 export const closeAttendanceModal = (
-  setAttendanceModalVisible: any,
-  setEditingAttendance: any,
-  setAttendanceStatus: any,
-  setAttendanceComment: any,
+  setAttendanceModalVisible: (value: boolean) => void,
+  setEditingAttendance: (value: null) => void,
+  setAttendanceStatus: (value: string) => void,
+  setAttendanceComment: (value: string) => void,
 ) => {
   setAttendanceModalVisible(false);
   setEditingAttendance(null);
@@ -579,19 +602,18 @@ export const closeAttendanceModal = (
   setAttendanceComment('');
 };
 
-
 export const handleAddColumnMark = async (
   subjectId: number,
   groupId: string,
-  students: any[],
-  setStudents: any,
+  students: SimplifiedStudent[],
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>,
 ) => {
   try {
     await addColumnMark(subjectId, groupId);
 
     const existingNumbers = new Set<number>();
     students.forEach((student) => {
-      student.ratings.forEach((mark: any) => {
+      student.ratings.forEach((mark) => {
         existingNumbers.add(mark.number);
       });
     });
@@ -599,8 +621,8 @@ export const handleAddColumnMark = async (
     const maxNumber = existingNumbers.size > 0 ? Math.max(...existingNumbers) : 0;
     const newMarkNumber = maxNumber + 1;
 
-    setStudents((prevStudents: any) =>
-      prevStudents.map((student: any) => ({
+    setStudents((prevStudents) =>
+      prevStudents.map((student) => ({
         ...student,
         ratings: [
           ...student.ratings,
@@ -612,17 +634,17 @@ export const handleAddColumnMark = async (
       })),
     );
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error adding column:', error);
-    Alert.alert('Ошибка', 'Не удалось добавить столбец.');
+    Alert.alert('Ошибка', getErrorMessage(error));
   }
 };
 
-
 export const handleReset = async (
-  editingMark: any,
+  editingMark: EditingMark | null,
   subjectId: number,
-  handleUpdateRatingFn: any,
-  closeModalFn: any,
+  handleUpdateRatingFn: (studentId: string, markNumber: number, newRating: number | null) => void,
+  closeModalFn: () => void,
 ) => {
   if (!editingMark) return;
 
@@ -631,8 +653,9 @@ export const handleReset = async (
     handleUpdateRatingFn(editingMark.studentId, editingMark.markNumber, null);
     closeModalFn();
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error resetting grade:', error);
-    Alert.alert('Ошибка', 'Не удалось сбросить оценку');
+    Alert.alert('Ошибка', getErrorMessage(error));
   }
 };
 
@@ -640,12 +663,12 @@ export const handleUpdateRating = (
   studentId: string,
   markNumber: number,
   newRating: number | null,
-  setStudents: any,
+  setStudents: React.Dispatch<React.SetStateAction<SimplifiedStudent[]>>,
 ) => {
-  setStudents((prevStudents: any) =>
-    prevStudents.map((student: any) => {
+  setStudents((prevStudents) =>
+    prevStudents.map((student) => {
       if (student.id === studentId) {
-        const updatedRatings = student.ratings.map((mark: any) =>
+        const updatedRatings = student.ratings.map((mark) =>
           mark.number === markNumber ? { ...mark, value: newRating } : mark,
         );
         return { ...student, ratings: updatedRatings };
@@ -654,7 +677,6 @@ export const handleUpdateRating = (
     }),
   );
 };
-
 
 export const formatDateTime = (dateTimeString: string | null | undefined, showTime = true) => {
   if (!dateTimeString) return 'Не указана';
@@ -694,7 +716,7 @@ export const formatDateTime = (dateTimeString: string | null | undefined, showTi
   return `${baseDate} ${formattedHours}:${formattedMinutes}`;
 };
 
-export const formatTeacherName = (mark: any) => {
+export const formatTeacherName = (mark: DetailedMark | null) => {
   if (!mark || !mark.lastNameTeacher) return 'не указан';
   const nameInitial = mark.nameTeacher ? `${mark.nameTeacher[0]}.` : '';
   const patronymicInitial = mark.patronymicTeacher ? `${mark.patronymicTeacher[0]}.` : '';
@@ -761,32 +783,28 @@ export const getFile = async (id: number, fileName: string) => {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    console.log('File saved to:', fileUri);
-
     const isSharingAvailable = await Sharing.isAvailableAsync();
     if (isSharingAvailable) {
       await Sharing.shareAsync(fileUri);
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(fileUri);
-        console.log('Файл удалён после шаринга:', fileUri);
       }
     } else {
       alert('Открытие файла не поддерживается на этом устройстве');
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(fileUri);
-        console.log('Файл удалён (без шаринга):', fileUri);
       }
     }
   } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error saving, sharing or deleting file:', error);
     if (fileUri) {
       try {
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
         if (fileInfo.exists) {
           await FileSystem.deleteAsync(fileUri);
-          console.log('Файл удалён после ошибки:', fileUri);
         }
       } catch (delErr) {
         console.error('Ошибка удаления файла после ошибки:', delErr);
@@ -795,7 +813,10 @@ export const getFile = async (id: number, fileName: string) => {
   }
 };
 
-export const pickFiles = async (selectedFiles: any[], setSelectedFiles: any) => {
+export const pickFiles = async (
+  selectedFiles: SelectedFile[],
+  setSelectedFiles: (files: SelectedFile[]) => void,
+) => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: '*/*',
@@ -803,23 +824,16 @@ export const pickFiles = async (selectedFiles: any[], setSelectedFiles: any) => 
       copyToCacheDirectory: true,
     });
 
-    console.log('Document picker result:', result);
-
     if (result.canceled === false && result.assets) {
       const filesToAdd = result.assets.slice(0, 3 - selectedFiles.length);
 
       if (filesToAdd.length > 0) {
-        const newFiles = filesToAdd.map((file) => {
-          const selectedFile = {
-            uri: file.uri,
-            name: file.name || 'file',
-            mimeType: file.mimeType || 'application/octet-stream',
-            size: file.size,
-          };
-          console.log('Selected file:', selectedFile);
-          return selectedFile;
-        });
-
+        const newFiles: SelectedFile[] = filesToAdd.map((file) => ({
+          uri: file.uri,
+          name: file.name || 'file',
+          mimeType: file.mimeType || 'application/octet-stream',
+          size: file.size,
+        }));
         setSelectedFiles([...selectedFiles, ...newFiles]);
       } else {
         Alert.alert('Предупреждение', 'Можно прикрепить не более 3 файлов');
@@ -831,11 +845,26 @@ export const pickFiles = async (selectedFiles: any[], setSelectedFiles: any) => 
   }
 };
 
-export const removeFile = (index: number, selectedFiles: any[], setSelectedFiles: any) => {
+export const removeFile = (index: number, selectedFiles: SelectedFile[], setSelectedFiles: (files: SelectedFile[]) => void) => {
   const newFiles = [...selectedFiles];
   newFiles.splice(index, 1);
   setSelectedFiles(newFiles);
 };
+
+interface HandleSendCommentParams {
+  newComment: string;
+  selectedFiles: SelectedFile[];
+  editingMark: EditingMark | null;
+  userData: UserData;
+  subjectId: number;
+  setCommentLoading: (value: boolean) => void;
+  setNewComment: (value: string) => void;
+  setSelectedFiles: (files: SelectedFile[]) => void;
+  setChanges: (changes: Change[]) => void;
+  setDetailedMark?: (mark: DetailedMark | null) => void;
+  fetchChanges: (subjectId: number, studentId: string, markNumber: number) => Promise<Change[]>;
+  fetchPersonalDetailedMark: (studentData: { id: number }, subjectId: number, markNumber: number) => Promise<DetailedMark>;
+}
 
 export const handleSendComment = async ({
   newComment,
@@ -848,9 +877,9 @@ export const handleSendComment = async ({
   setSelectedFiles,
   setChanges,
   setDetailedMark,
-  fetchChanges: fetchChangesFn,
-  fetchPersonalDetailedMark: fetchPersonalDetailedMarkFn,
-}: any) => {
+  fetchChanges,
+  fetchPersonalDetailedMark,
+}: HandleSendCommentParams) => {
   if (!newComment.trim() && selectedFiles.length === 0) {
     Alert.alert('Ошибка', 'Добавьте комментарий или файлы');
     return;
@@ -861,7 +890,7 @@ export const handleSendComment = async ({
   setCommentLoading(true);
 
   try {
-    let lastChange;
+    let lastChange: Change | undefined;
     const isTeacher = userData?.role === 'teacher';
 
     if (newComment.trim()) {
@@ -873,14 +902,13 @@ export const handleSendComment = async ({
         isTeacher,
       );
 
-      const changes = await fetchChangesFn(
+      const changes = await fetchChanges(
         subjectId,
         editingMark.studentId,
         editingMark.markNumber,
       );
       changes.sort(
-        (a: any, b: any) =>
-          new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+        (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
       );
       lastChange = changes[changes.length - 1];
       if (!lastChange?.idSupplement) throw new Error('idSupplement не найден');
@@ -894,22 +922,19 @@ export const handleSendComment = async ({
         isTeacher,
       );
 
-      const changes = await fetchChangesFn(
+      const changes = await fetchChanges(
         subjectId,
         editingMark.studentId,
         editingMark.markNumber,
       );
       changes.sort(
-        (a: any, b: any) =>
-          new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+        (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
       );
       lastChange = changes[changes.length - 1];
       if (!lastChange?.idSupplement) throw new Error('idSupplement не найден');
     }
 
     if (selectedFiles.length > 0 && lastChange) {
-      console.log('idSupplement для загрузки файлов:', lastChange.idSupplement);
-      console.log('Количество файлов для загрузки:', selectedFiles.length);
       await uploadFiles(lastChange.idSupplement, selectedFiles);
       setSelectedFiles([]);
     }
@@ -917,7 +942,7 @@ export const handleSendComment = async ({
     Alert.alert('Успех', 'Данные успешно отправлены');
     setNewComment('');
 
-    const changesData = await fetchChangesFn(
+    const changesData = await fetchChanges(
       subjectId,
       editingMark.studentId,
       editingMark.markNumber,
@@ -925,22 +950,17 @@ export const handleSendComment = async ({
     setChanges(changesData);
 
     if (setDetailedMark) {
-      const updatedMarkDetails = await fetchPersonalDetailedMarkFn(
+      const updatedMarkDetails = await fetchPersonalDetailedMark(
         { id: parseInt(editingMark.studentId, 10) },
         subjectId,
         editingMark.markNumber,
       );
       setDetailedMark(updatedMarkDetails);
     }
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Полная ошибка:', error);
-    let errorMessage = 'Ошибка при отправке данных';
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-    Alert.alert('Ошибка', errorMessage);
+    Alert.alert('Ошибка', getErrorMessage(error));
   } finally {
     setCommentLoading(false);
   }
