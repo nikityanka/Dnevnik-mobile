@@ -62,26 +62,35 @@ export const loadMarks = async ({
       fetchSubjectName(subjectId),
     ]);
 
-    const formattedMarks: ExtendedMark[] = marksData.map((mark: any) => {
-      console.log('Mark data:', JSON.stringify(mark, null, 2));
-      
-      const lastName = mark.lastNameTeacher || mark.lastnameTeacher || mark.surname || mark.fio?.split(' ')[0] || '';
-      const firstName = mark.nameTeacher || mark.name || mark.fio?.split(' ')[1] || '';
-      const patronymic = mark.patronymicTeacher || mark.patronymic || mark.fio?.split(' ')[2] || '';
-      
-      let teacherValue = 'Не указан';
-      if (lastName || firstName || patronymic) {
-        const initials = firstName ? `${firstName[0]}.` : '';
-        const patronymicInitials = patronymic ? `${patronymic[0]}.` : '';
-        teacherValue = `${lastName} ${initials}${patronymicInitials}`.trim();
-      }
-
-      return {
-        ...mark,
-        teacher: teacherValue,
-        date: mark.dateLesson,
-      };
-    });
+    const formattedMarks: ExtendedMark[] = await Promise.all(
+      marksData.map(async (mark: any) => {
+        try {
+          const detailedMark = await fetchPersonalDetailedMark(userData, subjectId, mark.number);
+          const lastName = detailedMark.lastNameTeacher || '';
+          const firstName = detailedMark.nameTeacher || '';
+          const patronymic = detailedMark.patronymicTeacher || '';
+          
+          let teacherValue = 'Не указан';
+          if (lastName || firstName || patronymic) {
+            const initials = firstName ? `${firstName[0]}.` : '';
+            const patronymicInitials = patronymic ? `${patronymic[0]}.` : '';
+            teacherValue = `${lastName} ${initials}${patronymicInitials}`.trim();
+          }
+          
+          return {
+            ...mark,
+            teacher: teacherValue,
+            date: mark.dateLesson,
+          };
+        } catch (e) {
+          return {
+            ...mark,
+            teacher: 'Не указан',
+            date: mark.dateLesson,
+          };
+        }
+      })
+    );
 
     setMarks(formattedMarks);
     setError(null);
