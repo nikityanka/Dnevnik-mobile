@@ -62,13 +62,24 @@ export const loadMarks = async ({
       fetchSubjectName(subjectId),
     ]);
 
-    const formattedMarks: ExtendedMark[] = marksData.map((mark: DetailedMark) => ({
-      ...mark,
-      teacher: mark.lastNameTeacher
-        ? `${mark.lastNameTeacher} ${mark.nameTeacher?.[0]}.${mark.patronymicTeacher?.[0]}.`
-        : 'Не указан',
-      date: mark.dateLesson,
-    }));
+    const formattedMarks: ExtendedMark[] = marksData.map((mark: DetailedMark) => {
+      const lastName = mark.lastNameTeacher || '';
+      const firstName = mark.nameTeacher || '';
+      const patronymic = mark.patronymicTeacher || '';
+      
+      let teacherValue = 'Не указан';
+      if (lastName || firstName || patronymic) {
+        const initials = firstName ? `${firstName[0]}.` : '';
+        const patronymicInitials = patronymic ? `${patronymic[0]}.` : '';
+        teacherValue = `${lastName} ${initials}${patronymicInitials}`.trim();
+      }
+
+      return {
+        ...mark,
+        teacher: teacherValue,
+        date: mark.dateLesson,
+      };
+    });
 
     setMarks(formattedMarks);
     setError(null);
