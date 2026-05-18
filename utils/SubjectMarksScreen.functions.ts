@@ -63,9 +63,11 @@ export const loadMarks = async ({
     ]);
 
     const formattedMarks: ExtendedMark[] = marksData.map((mark: any) => {
-      const lastName = mark.lastNameTeacher || mark.lastnameTeacher || '';
-      const firstName = mark.nameTeacher || '';
-      const patronymic = mark.patronymicTeacher || '';
+      console.log('Mark data:', JSON.stringify(mark, null, 2));
+      
+      const lastName = mark.lastNameTeacher || mark.lastnameTeacher || mark.surname || mark.fio?.split(' ')[0] || '';
+      const firstName = mark.nameTeacher || mark.name || mark.fio?.split(' ')[1] || '';
+      const patronymic = mark.patronymicTeacher || mark.patronymic || mark.fio?.split(' ')[2] || '';
       
       let teacherValue = 'Не указан';
       if (lastName || firstName || patronymic) {
