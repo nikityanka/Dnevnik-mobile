@@ -1,7 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp as NativeRouteProp } from '@react-navigation/native';
 
-// Интерфейсы для пользователей
 export interface Student {
   id: number;
   lastName: string;
@@ -60,35 +59,6 @@ export interface Group {
   specialty: string;
   studentCount: number;
 }
-
-// Интерфейсы для оценок
-/*
-export interface MarkItem {
-  date: string | null;
-  value: number | null;
-  number: number;
-  homework: string | null;
-  typeMark: {
-    id: number;
-    name: string;
-    weight: number;
-    idSt: number;
-  };
-}*/
-
-/*
-export interface MarkItem {
-  date: string | null;
-  value: number | null;
-  number: number;
-  homework: string | null;
-  typeMark: {
-    id: number;
-    name: string;
-    weight: number;
-    idSt: number;
-  };
-}*/
 
 export interface StudentWithMarks {
   idStudent: number;
@@ -222,13 +192,13 @@ export interface TeacherShort {
   idTeacher: number;
   lastnameTeacher: string;
   nameTeacher: string;
-  patronymicTeacher: string | null; // Может быть пустая строка или null
+  patronymicTeacher: string | null;
 }
 
 export interface PersonalMark {
   STTeachersDTO?: STTeachersDTO;
-  stteachersDTO?: STTeachersDTO; // API возвращает с маленькой буквы
-  nameSubjectTeachersDTO?: NameSubjectTeachersDTO; // для обратной совместимости
+  stteachersDTO?: STTeachersDTO;
+  nameSubjectTeachersDTO?: NameSubjectTeachersDTO;
   marksBySt: MarkItem[] | null[] | null;
   certification: any | null;
 }
@@ -466,7 +436,6 @@ export interface SelectedFile {
   size?: number;
 }
 
-// Типизация параметров навигации
 export type RootStackParamList = {
   Login: undefined;
   Home: { userData: Teacher | Student | Manager };
@@ -489,11 +458,9 @@ export type TabParamList = {
   ScheduleTab: undefined;
 };
 
-// Типизация навигации
 export type NavigationProps<T extends keyof RootStackParamList = keyof RootStackParamList> =
   StackNavigationProp<RootStackParamList, T>;
 
-// Типизация параметров маршрута
 export type RoutePropType<T extends keyof RootStackParamList> = NativeRouteProp<
   RootStackParamList,
   T

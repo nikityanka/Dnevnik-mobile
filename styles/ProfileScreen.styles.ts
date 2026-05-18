@@ -77,7 +77,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  // Стили для настроек безопасности
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -60,7 +60,6 @@ export default function StudentRow({ student, onUpdateRating, subjectId, groupId
         const existingNumbers = student.ratings.map((m: any) => m.number);
         const newMarkNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
 
-        // await addMark(student.id, subjectId, parsedRating, groupId, newMarkNumber);
         Alert.alert('Информация', 'Функция добавления оценки временно недоступна');
 
         if (onUpdateRating) {
@@ -88,7 +87,6 @@ export default function StudentRow({ student, onUpdateRating, subjectId, groupId
     if (!editingMark) return;
 
     try {
-      // await deleteMark(student.id, subjectId, editingMark.number);
       Alert.alert('Информация', 'Функция удаления оценки временно недоступна');
 
       if (onUpdateRating) {
