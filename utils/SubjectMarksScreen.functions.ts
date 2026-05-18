@@ -62,8 +62,8 @@ export const loadMarks = async ({
       fetchSubjectName(subjectId),
     ]);
 
-    const formattedMarks: ExtendedMark[] = marksData.map((mark: DetailedMark) => {
-      const lastName = mark.lastNameTeacher || '';
+    const formattedMarks: ExtendedMark[] = marksData.map((mark: any) => {
+      const lastName = mark.lastNameTeacher || mark.lastnameTeacher || '';
       const firstName = mark.nameTeacher || '';
       const patronymic = mark.patronymicTeacher || '';
       
