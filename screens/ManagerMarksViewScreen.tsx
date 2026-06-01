@@ -15,7 +15,7 @@ import { fetchMarks } from '../components/FetchData/fetchMarks';
 export default function ManagerMarksViewScreen() {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute<RoutePropType<'ManagerMarksView'>>();
-  const { groupId, groupNumber, subjectId, subjectName, userData } = route.params;
+  const { groupId, groupNumber, subjectId, subjectName, teacherId, userData } = route.params;
 
   const [students, setStudents] = useState<StudentWithMarks[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ export default function ManagerMarksViewScreen() {
   const loadMarks = async () => {
     try {
       setLoading(true);
-      const marksData = await fetchMarks(groupId, subjectId, 1);
+      const marksData = await fetchMarks(groupId, subjectId, teacherId);
       setStudents(marksData);
       setError(null);
     } catch (err) {

@@ -65,22 +65,40 @@ export default function ManagerGroupDetailsScreen() {
     navigation.goBack();
   };
 
+  const getTeacherId = (subject: Subject): number | null => {
+    const teachers = (subject as any).teachers as { idTeacher: number }[] | undefined;
+    if (!teachers || teachers.length === 0) return null;
+    return teachers[0].idTeacher;
+  };
+
   const handleViewMarks = (subject: Subject) => {
+    const teacherId = getTeacherId(subject);
+    if (teacherId === null) {
+      setError('У предмета не назначен преподаватель');
+      return;
+    }
     navigation.navigate('ManagerMarksView', {
       groupId,
       groupNumber,
       subjectId: subject.idSt,
       subjectName: subject.nameSubject,
+      teacherId,
       userData,
     });
   };
 
   const handleViewAttendance = (subject: Subject) => {
+    const teacherId = getTeacherId(subject);
+    if (teacherId === null) {
+      setError('У предмета не назначен преподаватель');
+      return;
+    }
     navigation.navigate('ManagerAttendanceView', {
       groupId,
       groupNumber,
       subjectId: subject.idSt,
       subjectName: subject.nameSubject,
+      teacherId,
       userData,
     });
   };

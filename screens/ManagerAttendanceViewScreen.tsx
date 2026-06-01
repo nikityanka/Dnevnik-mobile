@@ -15,7 +15,7 @@ import { fetchAttendances } from '../components/FetchData/fetchAttendance';
 export default function ManagerAttendanceViewScreen() {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute<RoutePropType<'ManagerAttendanceView'>>();
-  const { groupId, groupNumber, subjectId, subjectName, userData } = route.params;
+  const { groupId, groupNumber, subjectId, subjectName, teacherId, userData } = route.params;
 
   const [attendances, setAttendances] = useState<StudentAttendance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ export default function ManagerAttendanceViewScreen() {
   const loadAttendances = async () => {
     try {
       setLoading(true);
-      const attendanceData = await fetchAttendances(groupId, subjectId, 1);
+      const attendanceData = await fetchAttendances(groupId, subjectId, teacherId);
       setAttendances(attendanceData);
       setError(null);
     } catch (err) {

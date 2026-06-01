@@ -448,8 +448,8 @@ export type RootStackParamList = {
   Profile: { userData: Teacher | Student | Manager };
   ManagerGroups: { userData: Manager };
   ManagerGroupDetails: { groupId: string; groupNumber: string; userData: Manager };
-  ManagerMarksView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; userData: Manager };
-  ManagerAttendanceView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; userData: Manager };
+  ManagerMarksView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; teacherId: number; userData: Manager };
+  ManagerAttendanceView: { groupId: string; groupNumber: string; subjectId: number; subjectName: string; teacherId: number; userData: Manager };
   ManagerStudentDetail: { studentId: number; userData: Manager };
 };
 
