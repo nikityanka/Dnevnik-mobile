@@ -389,8 +389,6 @@ export const handleSendComment = async ({
       setSelectedFiles([]);
     }
 
-    Alert.alert('Успех', 'Комментарий отправлен.');
-
     setNewComment('');
 
     const updatedMark = await fetchPersonalDetailedMark(

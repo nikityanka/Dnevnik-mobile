@@ -278,7 +278,6 @@ export const handleAddColumnWithLesson = async (
   try {
     await addColumnMarkWithLesson(subjectId, groupId, selectedLesson.id, userData.id);
     await loadStudentsFn();
-    Alert.alert('Успех', 'Столбец оценок успешно добавлен');
     closeLessonsModalFn();
   } catch (error) {
     if (error instanceof ApiException && error.code === 'ABORTED') return;
@@ -311,7 +310,6 @@ export const handleUpdateColumnComment = async (
       ...detailedMark,
       comment: editableComment,
     });
-    Alert.alert('Успех', 'Тема столбца успешно обновлена');
   } catch (error) {
     if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error updating column comment:', error);
@@ -370,7 +368,6 @@ export const handleUpdateMarkType = async (
       selectedColumnNumber,
     );
     setDetailedMark(updatedMarkDetails);
-    Alert.alert('Успех', 'Тип урока успешно обновлен');
     setTypeMarkDropdownVisible(false);
   } catch (error) {
     if (error instanceof ApiException && error.code === 'ABORTED') return;
@@ -431,7 +428,6 @@ export const handleDeleteColumn = async (
                 ratings: student.ratings.filter((mark) => mark.number !== columnNumber),
               })),
             );
-            Alert.alert('Успешно', 'Колонка удалена');
             closeColumnPropertiesFn();
           } catch (error) {
             if (error instanceof ApiException && error.code === 'ABORTED') return;
@@ -558,7 +554,6 @@ export const handleSaveAttendance = async (
     );
 
     setAttendanceModalVisible(false);
-    Alert.alert('Успех', 'Посещаемость обновлена');
   } catch (error) {
     if (error instanceof ApiException && error.code === 'ABORTED') return;
     console.error('Error saving attendance:', error);
@@ -939,7 +934,6 @@ export const handleSendComment = async ({
       setSelectedFiles([]);
     }
 
-    Alert.alert('Успех', 'Данные успешно отправлены');
     setNewComment('');
 
     const changesData = await fetchChanges(
