@@ -1,0 +1,15 @@
+module.exports = {
+  documentDirectory: '/mock/dir/',
+  getInfoAsync: jest.fn().mockResolvedValue({ exists: true }),
+  makeDirectoryAsync: jest.fn().mockResolvedValue(),
+  writeAsStringAsync: jest.fn().mockResolvedValue(),
+  deleteAsync: jest.fn().mockResolvedValue(),
+  readAsStringAsync: jest.fn().mockResolvedValue(''),
+  getDocumentAsync: jest.fn().mockResolvedValue({ canceled: true }),
+  shareAsync: jest.fn().mockResolvedValue(),
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn().mockResolvedValue(),
+  removeItem: jest.fn().mockResolvedValue(),
+  EncodingType: { Base64: 'base64' },
+};
