@@ -3,6 +3,7 @@ import { fetchAttendances, updateAttendance } from '../components/FetchData/fetc
 import { formatLessonDate } from '../utils/StudentsScreen.functions';
 
 jest.mock('../components/api');
+jest.spyOn(console, 'error').mockImplementation(() => {});
 
 // API: получение посещаемости
 describe('attendance – fetch', () => {

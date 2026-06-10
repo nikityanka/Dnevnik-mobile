@@ -4,6 +4,7 @@ import { saveSession, loadSession, clearSession } from '../components/auth/sessi
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('../components/api');
+jest.spyOn(console, 'error').mockImplementation(() => {});
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),

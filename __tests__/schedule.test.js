@@ -3,6 +3,7 @@ import { fetchGroupSchedule, fetchTeacherSchedule } from '../components/FetchDat
 import { getFirstLetter, getTimeByPairNumber, scheduleSeparation, makeAbbr } from '../utils/ScheduleScreen.functions';
 
 jest.mock('../components/api');
+jest.spyOn(console, 'error').mockImplementation(() => {});
 
 // API: расписание
 describe('schedule – API', () => {
