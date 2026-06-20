@@ -5,9 +5,12 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Switch,
+  Alert,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
+import { useSecurity } from '../contexts/SecurityContext';
 import { RoutePropType, Student, Teacher, Manager } from '../components/types';
 import { styles } from '../styles/ProfileScreen.styles';
 import {
@@ -27,6 +30,31 @@ export default function ProfileScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { screenshotProtection, minimizeProtection, toggleScreenshotProtection, toggleMinimizeProtection } = useSecurity();
+
+  const confirmToggleScreenshot = () => {
+    const next = !screenshotProtection;
+    Alert.alert(
+      'Подтверждение',
+      `Вы уверены, что хотите ${next ? 'включить' : 'выключить'} защиту при скриншотах?`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        { text: 'Да', onPress: () => toggleScreenshotProtection() },
+      ],
+    );
+  };
+
+  const confirmToggleMinimize = () => {
+    const next = !minimizeProtection;
+    Alert.alert(
+      'Подтверждение',
+      `Вы уверены, что хотите ${next ? 'включить' : 'выключить'} защиту при свёртывании?`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        { text: 'Да', onPress: () => toggleMinimizeProtection() },
+      ],
+    );
+  };
 
   if (!userData) {
     return (
@@ -130,6 +158,40 @@ export default function ProfileScreen() {
             {isLoading ? 'Сохраняем...' : 'Изменить пароль'}
           </Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Безопасность</Text>
+
+        <View style={styles.settingRow}>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>Защита при скриншотах</Text>
+            <Text style={styles.settingDescription}>Блокирует создание снимков экрана</Text>
+          </View>
+          <Switch
+            value={screenshotProtection}
+            onValueChange={confirmToggleScreenshot}
+            trackColor={{ false: '#CCCCCC', true: '#012FA7' }}
+            thumbColor={screenshotProtection ? '#FFFFFF' : '#F4F4F4'}
+          />
+        </View>
+
+        <View style={styles.settingRow}>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>Защита при свёртывании</Text>
+            <Text style={styles.settingDescription}>Экран становится чёрным при свертывании приложения</Text>
+          </View>
+          <Switch
+            value={minimizeProtection}
+            onValueChange={confirmToggleMinimize}
+            trackColor={{ false: '#CCCCCC', true: '#012FA7' }}
+            thumbColor={minimizeProtection ? '#FFFFFF' : '#F4F4F4'}
+          />
+        </View>
+
+        <Text style={styles.warningText}>
+          Настройки применятся после перезагрузки приложения!
+        </Text>
       </View>
 
       <View style={styles.card}>

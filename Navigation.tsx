@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 
+import { SecurityProvider } from './contexts/SecurityContext';
 import AppScreen from './App';
 import SubjectsScreen from './screens/SubjectsScreen';
 import GroupsScreen from './screens/GroupsScreen';
@@ -274,7 +275,8 @@ function RoleBasedNavigator({ route }: any) {
 
 export default function Navigation() {
   return (
-    <NavigationContainer>
+    <SecurityProvider>
+      <NavigationContainer>
         <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
@@ -298,5 +300,6 @@ export default function Navigation() {
         <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
       </Stack.Navigator>
       </NavigationContainer>
+    </SecurityProvider>
   );
 }
