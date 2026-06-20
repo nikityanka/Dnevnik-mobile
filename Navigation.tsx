@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -18,7 +18,6 @@ import ManagerStudentDetailScreen from './screens/ManagerStudentDetailScreen';
 import ManagerMarksViewScreen from './screens/ManagerMarksViewScreen';
 import ManagerAttendanceViewScreen from './screens/ManagerAttendanceViewScreen';
 import { RootStackParamList, Student, Teacher, Manager } from './components/types';
-import SecurityWrapper from './components/SecurityWrapper';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -274,14 +273,8 @@ function RoleBasedNavigator({ route }: any) {
 }
 
 export default function Navigation() {
-  const [currentRoute, setCurrentRoute] = useState('Login');
-
   return (
-    <SecurityWrapper currentRoute={currentRoute}>
-      <NavigationContainer onStateChange={(state) => {
-        const route = state?.routes?.[state.index]?.name;
-        if (route) setCurrentRoute(route as string);
-      }}>
+    <NavigationContainer>
         <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
@@ -305,6 +298,5 @@ export default function Navigation() {
         <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
       </Stack.Navigator>
       </NavigationContainer>
-    </SecurityWrapper>
   );
 }

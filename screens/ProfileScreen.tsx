@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   TextInput,
-  Switch,
-  Platform,
-  Alert,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { RoutePropType, Student, Teacher, Manager } from '../components/types';
 import { styles } from '../styles/ProfileScreen.styles';
@@ -20,14 +16,6 @@ import {
 } from '../utils/ProfileScreen.functions';
 
 type UserData = Student | Teacher | Manager;
-
-const SECURITY_SETTINGS_KEY = 'security_settings';
-
-interface SecuritySettings {
-  requireBiometrics: boolean;
-  blockScreenshots: boolean;
-  enableBlurOnBackground: boolean;
-}
 
 export default function ProfileScreen() {
   const route = useRoute<RoutePropType<'Profile'>>();
@@ -39,56 +27,6 @@ export default function ProfileScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
-    requireBiometrics: false,
-    blockScreenshots: true,
-    enableBlurOnBackground: true,
-  });
-
-  useEffect(() => {
-    loadSecuritySettings();
-  }, []);
-
-  const loadSecuritySettings = async () => {
-    try {
-      const settings = await AsyncStorage.getItem(SECURITY_SETTINGS_KEY);
-      if (settings) {
-        setSecuritySettings(JSON.parse(settings));
-      }
-    } catch (error) {
-      console.error('Error loading security settings:', error);
-    }
-  };
-
-  const saveSecuritySettings = async (newSettings: SecuritySettings) => {
-    try {
-      await AsyncStorage.setItem(SECURITY_SETTINGS_KEY, JSON.stringify(newSettings));
-      setSecuritySettings(newSettings);
-    } catch (error) {
-      console.error('Error saving security settings:', error);
-    }
-  };
-
-  const handleScreenshotsToggle = (value: boolean) => {
-    Alert.alert(
-      'Защита экрана',
-      value 
-        ? 'Скриншоты и запись экрана будут заблокированы'
-        : 'Защита экрана будет отключена',
-      [
-        { text: 'Отмена', style: 'cancel' },
-        { 
-          text: value ? 'Включить' : 'Отключить', 
-          onPress: () => saveSecuritySettings({ ...securitySettings, blockScreenshots: value })
-        },
-      ]
-    );
-  };
-
-  const handleBlurToggle = (value: boolean) => {
-    saveSecuritySettings({ ...securitySettings, enableBlurOnBackground: value });
-  };
 
   if (!userData) {
     return (
@@ -192,44 +130,6 @@ export default function ProfileScreen() {
             {isLoading ? 'Сохраняем...' : 'Изменить пароль'}
           </Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>🔒 Безопасность</Text>
-        
-        {Platform.OS !== 'web' && (
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Защита экрана</Text>
-              <Text style={styles.settingDescription}>
-                Блокировать скриншоты и запись экрана
-              </Text>
-            </View>
-            <Switch
-              value={securitySettings.blockScreenshots}
-              onValueChange={handleScreenshotsToggle}
-              trackColor={{ false: '#767577', true: '#4CAF50' }}
-              thumbColor={securitySettings.blockScreenshots ? '#fff' : '#f4f3f4'}
-            />
-          </View>
-        )}
-
-        {Platform.OS !== 'web' && (
-          <View style={[styles.settingRow, { marginTop: 15 }]}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Скрытие при свертывании</Text>
-              <Text style={styles.settingDescription}>
-                Скрывать экран при сворачивании приложения
-              </Text>
-            </View>
-            <Switch
-              value={securitySettings.enableBlurOnBackground}
-              onValueChange={handleBlurToggle}
-              trackColor={{ false: '#767577', true: '#4CAF50' }}
-              thumbColor={securitySettings.enableBlurOnBackground ? '#fff' : '#f4f3f4'}
-            />
-          </View>
-        )}
       </View>
 
       <View style={styles.card}>
