@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import api from '../components/api';
 import { NavigationProps, RoutePropType, ManagerStudentDetail } from '../components/types';
 import { styles } from '../styles/GroupsScreen.styles';
 import { fetchStudentDetails } from '../components/FetchData/fetchManager';
@@ -18,6 +19,7 @@ export default function ManagerStudentDetailScreen() {
   const { studentId, userData } = route.params;
 
   const [student, setStudent] = useState<ManagerStudentDetail | null>(null);
+  const [groupNumber, setGroupNumber] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +32,19 @@ export default function ManagerStudentDetailScreen() {
       setLoading(true);
       const data = await fetchStudentDetails(studentId);
       setStudent(data);
+
+      if (data?.idGroup) {
+        try {
+          const groupsRes = await api.get('/groups');
+          const matched = groupsRes.data.find((g: any) => g.id === data.idGroup);
+          if (matched) {
+            setGroupNumber(String(matched.numberGroup));
+          }
+        } catch (e) {
+          console.error('Не удалось получить номер группы', e);
+        }
+      }
+
       setError(null);
     } catch (err) {
       console.error('Error loading student data:', err);
@@ -141,8 +156,8 @@ export default function ManagerStudentDetailScreen() {
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>ID группы:</Text>
-            <Text style={styles.infoValue}>{student.idGroup}</Text>
+            <Text style={styles.infoLabel}>Группа:</Text>
+            <Text style={styles.infoValue}>{groupNumber || student.idGroup}</Text>
           </View>
         </View>
 
