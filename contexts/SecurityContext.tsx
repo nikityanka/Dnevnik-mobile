@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus, View, StyleSheet } from 'react-native';
+import { AppState, AppStateStatus, View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ScreenCapture from 'expo-screen-capture';
 
@@ -79,7 +79,14 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-      {showOverlay && <View style={styles.overlay} />}
+      {showOverlay && (
+        <View style={styles.overlay}>
+          <View style={styles.overlayContent}>
+            <Text style={styles.lockIcon}>🔒</Text>
+            <Text style={styles.overlayText}>Защита экрана</Text>
+          </View>
+        </View>
+      )}
     </SecurityContext.Provider>
   );
 }
@@ -89,7 +96,24 @@ export const useSecurity = () => useContext(SecurityContext);
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
+    backgroundColor: '#012FA7',
     zIndex: 99999,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayContent: {
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 100,
+  },
+  lockIcon: {
+    fontSize: 64,
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  overlayText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
