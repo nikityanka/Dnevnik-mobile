@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import api from './components/api';
 import { fetchStudent, fetchTeacher } from './components/FetchData/fetchLogin';
 import { Student, Teacher, Manager, RootStackParamList } from './components/types';
 import { Input } from './components/Input/Input';
@@ -72,6 +73,19 @@ export default function App() {
 
       if (user && user.id && user.name && user.lastName) {
         if (userRole === 'student') {
+          let numberGroup = user.numberGroup;
+          if (!numberGroup && user.idGroup) {
+            try {
+              const groupsRes = await api.get('/groups');
+              const matched = groupsRes.data.find((g: any) => g.id === user.idGroup);
+              if (matched) {
+                numberGroup = String(matched.numberGroup);
+              }
+            } catch (e) {
+              console.error('Не удалось получить номер группы', e);
+            }
+          }
+
           const studentData: Student = {
             id: Number(user.id),
             name: user.name,
@@ -85,7 +99,7 @@ export default function App() {
             address: user.address || null,
             email: user.email || null,
             role: 'student',
-            numberGroup: user.numberGroup,
+            numberGroup: numberGroup || '',
           };
 
           const session = {
@@ -104,6 +118,13 @@ export default function App() {
             ],
           });
         } else if (userRole === 'manager') {
+          const staffPositions = user.staffPosition || [];
+          const isHead = staffPositions.some((pos: any) => pos.id === 6);
+          if (!isHead) {
+            Alert.alert('Ошибка', 'Неверные данные');
+            return;
+          }
+
           const managerData: Manager = {
             id: Number(user.id),
             name: user.name,
@@ -132,6 +153,13 @@ export default function App() {
             ],
           });
         } else {
+          const staffPositions = user.staffPosition || [];
+          const isTeacher = staffPositions.some((pos: any) => pos.id === 9);
+          if (!isTeacher) {
+            Alert.alert('Ошибка', 'Неверные данные');
+            return;
+          }
+
           const teacherData: Teacher = {
             id: Number(user.id),
             name: user.name,

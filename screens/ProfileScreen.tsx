@@ -82,11 +82,6 @@ export default function ProfileScreen() {
         <Text style={styles.label}>Логин</Text>
         <Text style={styles.value}>{userData.login}</Text>
 
-        <Text style={styles.label}>Роль</Text>
-        <Text style={styles.value}>
-          {isStudent ? 'Студент' : isManager ? 'Заведующий' : 'Преподаватель'}
-        </Text>
-
         {isStudent && (
           <>
             <Text style={styles.label}>Группа</Text>
@@ -94,12 +89,17 @@ export default function ProfileScreen() {
           </>
         )}
 
-        {!isStudent && (
+        {isManager && (
           <>
             <Text style={styles.label}>Должность</Text>
-            <Text style={styles.value}>
-              {userData.staffPosition?.map(p => p.name).join(', ') || '—'}
-            </Text>
+            <Text style={styles.value}>Заведующий отделением</Text>
+          </>
+        )}
+
+        {!isStudent && !isManager && (
+          <>
+            <Text style={styles.label}>Должность</Text>
+            <Text style={styles.value}>Преподаватель</Text>
           </>
         )}
 
