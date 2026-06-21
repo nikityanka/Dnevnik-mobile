@@ -103,8 +103,6 @@ const styles = StyleSheet.create({
   },
   overlayContent: {
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 100,
   },
   lockIcon: {
     fontSize: 64,
