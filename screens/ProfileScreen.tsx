@@ -190,7 +190,7 @@ export default function ProfileScreen() {
         </View>
 
         <Text style={styles.warningText}>
-          Настройки применятся после перезагрузки приложения!
+          Защита от скриншотов работает сразу. Защита при свёртывании — после перезагрузки приложения.
         </Text>
       </View>
 
