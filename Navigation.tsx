@@ -324,8 +324,8 @@ export default function Navigation() {
       if (routeName === 'Login' || routeName === 'Home') return true;
       return false;
     };
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
   }, [routeName]);
 
   return (
