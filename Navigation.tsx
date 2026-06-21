@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Image, View, Text, StyleSheet, AppState, AppStateStatus } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, useNavigationState } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import * as ScreenCapture from 'expo-screen-capture';
 
 import { SecurityProvider, useSecurity } from './contexts/SecurityContext';
@@ -253,9 +253,8 @@ function ManagerTabNavigator({ userData }: ManagerTabNavigatorProps) {
   );
 }
 
-function SecurityOverlay() {
+function SecurityOverlay({ routeName }: { routeName: string }) {
   const { minimizeProtection, screenshotProtection } = useSecurity();
-  const routeName = useNavigationState(state => state?.routes?.[state.index]?.name);
   const prevAppState = useRef<AppStateStatus>('active');
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -314,11 +313,17 @@ function RoleBasedNavigator({ route }: any) {
 }
 
 export default function Navigation() {
+  const [routeName, setRouteName] = useState('Login');
+
+  const onStateChange = useCallback((state: any) => {
+    setRouteName(state?.routes?.[state.index]?.name ?? 'Login');
+  }, []);
+
   return (
     <SecurityProvider>
-      <NavigationContainer>
-        <View style={{ flex: 1 }}>
-          <Stack.Navigator
+      <SecurityOverlay routeName={routeName} />
+      <NavigationContainer onStateChange={onStateChange}>
+        <Stack.Navigator
           initialRouteName="Login"
           screenOptions={{
             headerShown: false,
@@ -340,8 +345,6 @@ export default function Navigation() {
           <Stack.Screen name="ManagerMarksView" component={ManagerMarksViewScreen} />
           <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
         </Stack.Navigator>
-        <SecurityOverlay />
-        </View>
       </NavigationContainer>
     </SecurityProvider>
   );
