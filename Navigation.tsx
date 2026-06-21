@@ -1,10 +1,11 @@
-import React from 'react';
-import { Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, View, Text, StyleSheet, AppState, AppStateStatus } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationState } from '@react-navigation/native';
+import * as ScreenCapture from 'expo-screen-capture';
 
-import { SecurityProvider } from './contexts/SecurityContext';
+import { SecurityProvider, useSecurity } from './contexts/SecurityContext';
 import AppScreen from './App';
 import SubjectsScreen from './screens/SubjectsScreen';
 import GroupsScreen from './screens/GroupsScreen';
@@ -252,6 +253,45 @@ function ManagerTabNavigator({ userData }: ManagerTabNavigatorProps) {
   );
 }
 
+function SecurityOverlay() {
+  const { minimizeProtection, screenshotProtection } = useSecurity();
+  const routeName = useNavigationState(state => state?.routes?.[state.index]?.name);
+  const prevAppState = useRef<AppStateStatus>('active');
+  const [showOverlay, setShowOverlay] = useState(false);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (prevAppState.current === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
+        setShowOverlay(true);
+      } else if (nextAppState === 'active') {
+        setShowOverlay(false);
+      }
+      prevAppState.current = nextAppState;
+    });
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    const isLogin = routeName === 'Login';
+    if (isLogin) {
+      ScreenCapture.allowScreenCaptureAsync().catch(() => {});
+    } else if (screenshotProtection) {
+      ScreenCapture.preventScreenCaptureAsync().catch(() => {});
+    }
+  }, [routeName, screenshotProtection]);
+
+  if (!minimizeProtection || !showOverlay || routeName === 'Login') return null;
+
+  return (
+    <View style={styles.overlay}>
+      <View style={styles.overlayContent}>
+        <Text style={styles.lockIcon}>🔒</Text>
+        <Text style={styles.overlayText}>Защита экрана</Text>
+      </View>
+    </View>
+  );
+}
+
 function RoleBasedNavigator({ route }: any) {
   const userData = route.params?.userData as Student | Teacher | Manager | undefined;
 
@@ -277,29 +317,55 @@ export default function Navigation() {
   return (
     <SecurityProvider>
       <NavigationContainer>
-        <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Login" component={AppScreen} />
+        <View style={{ flex: 1 }}>
+          <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Login" component={AppScreen} />
 
-        <Stack.Screen name="Home" component={RoleBasedNavigator} />
+          <Stack.Screen name="Home" component={RoleBasedNavigator} />
 
-        <Stack.Screen name="Subjects" component={SubjectsScreen} />
-        <Stack.Screen name="Groups" component={GroupsScreen} />
-        <Stack.Screen name="Students" component={StudentsScreen} />
-        <Stack.Screen name="Marks" component={MarksScreen} />
-        <Stack.Screen name="SubjectMarks" component={SubjectMarks} />
-        <Stack.Screen name="Schedule" component={ScheduleScreen} />
-        <Stack.Screen name="ManagerGroups" component={ManagerGroupsScreen} />
-        <Stack.Screen name="ManagerGroupDetails" component={ManagerGroupDetailsScreen} />
-        <Stack.Screen name="ManagerStudentDetail" component={ManagerStudentDetailScreen} />
-        <Stack.Screen name="ManagerMarksView" component={ManagerMarksViewScreen} />
-        <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
-      </Stack.Navigator>
+          <Stack.Screen name="Subjects" component={SubjectsScreen} />
+          <Stack.Screen name="Groups" component={GroupsScreen} />
+          <Stack.Screen name="Students" component={StudentsScreen} />
+          <Stack.Screen name="Marks" component={MarksScreen} />
+          <Stack.Screen name="SubjectMarks" component={SubjectMarks} />
+          <Stack.Screen name="Schedule" component={ScheduleScreen} />
+          <Stack.Screen name="ManagerGroups" component={ManagerGroupsScreen} />
+          <Stack.Screen name="ManagerGroupDetails" component={ManagerGroupDetailsScreen} />
+          <Stack.Screen name="ManagerStudentDetail" component={ManagerStudentDetailScreen} />
+          <Stack.Screen name="ManagerMarksView" component={ManagerMarksViewScreen} />
+          <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
+        </Stack.Navigator>
+        <SecurityOverlay />
+        </View>
       </NavigationContainer>
     </SecurityProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#012FA7',
+    zIndex: 99999,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayContent: {
+    alignItems: 'center',
+  },
+  lockIcon: {
+    fontSize: 64,
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  overlayText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+});
