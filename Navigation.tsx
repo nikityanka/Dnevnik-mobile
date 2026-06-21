@@ -264,7 +264,7 @@ function SecurityOverlay({ routeName, minimizeProtection, screenshotProtection }
       if (prevAppState.current === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
         setShowOverlay(true);
         if (minimizeProtection && routeName !== 'Login' && routeName !== 'Home' && navRef.isReady()) {
-          navRef.popToTop();
+          navRef.popToTop?.();
         }
       } else if (nextAppState === 'active') {
         setShowOverlay(false);
