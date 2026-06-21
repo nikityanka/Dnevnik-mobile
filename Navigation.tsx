@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Image, View, Text, StyleSheet, AppState, AppStateStatus, BackHandler, Modal } from 'react-native';
+import { Image, View, Text, StyleSheet, AppState, AppStateStatus, BackHandler } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import * as ScreenCapture from 'expo-screen-capture';
 
 import { SecurityProvider, useSecurity } from './contexts/SecurityContext';
 import AppScreen from './App';
+
+const navRef = createNavigationContainerRef();
 import SubjectsScreen from './screens/SubjectsScreen';
 import GroupsScreen from './screens/GroupsScreen';
 import StudentsScreen from './screens/StudentsScreen';
@@ -253,8 +255,7 @@ function ManagerTabNavigator({ userData }: ManagerTabNavigatorProps) {
   );
 }
 
-function SecurityOverlay({ routeName }: { routeName: string }) {
-  const { minimizeProtection, screenshotProtection } = useSecurity();
+function SecurityOverlay({ routeName, minimizeProtection, screenshotProtection }: { routeName: string; minimizeProtection: boolean; screenshotProtection: boolean }) {
   const prevAppState = useRef<AppStateStatus>('active');
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -262,13 +263,16 @@ function SecurityOverlay({ routeName }: { routeName: string }) {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (prevAppState.current === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
         setShowOverlay(true);
+        if (minimizeProtection && routeName !== 'Login' && routeName !== 'Home' && navRef.isReady()) {
+          navRef.popToTop();
+        }
       } else if (nextAppState === 'active') {
         setShowOverlay(false);
       }
       prevAppState.current = nextAppState;
     });
     return () => subscription.remove();
-  }, []);
+  }, [minimizeProtection, routeName]);
 
   useEffect(() => {
     const isLogin = routeName === 'Login';
@@ -279,17 +283,15 @@ function SecurityOverlay({ routeName }: { routeName: string }) {
     }
   }, [routeName, screenshotProtection]);
 
-  const isVisible = minimizeProtection && showOverlay && routeName !== 'Login';
+  if (!minimizeProtection || !showOverlay || routeName === 'Login') return null;
 
   return (
-    <Modal visible={isVisible} transparent={false} animationType="none" statusBarTranslucent>
-      <View style={styles.overlay}>
-        <View style={styles.overlayContent}>
-          <Text style={styles.lockIcon}>🔒</Text>
-          <Text style={styles.overlayText}>Защита экрана</Text>
-        </View>
+    <View style={styles.overlay}>
+      <View style={styles.overlayContent}>
+        <Text style={styles.lockIcon}>🔒</Text>
+        <Text style={styles.overlayText}>Защита экрана</Text>
       </View>
-    </Modal>
+    </View>
   );
 }
 
@@ -314,7 +316,8 @@ function RoleBasedNavigator({ route }: any) {
   return <TeacherTabNavigator userData={userData as Teacher} />;
 }
 
-export default function Navigation() {
+function NavContent() {
+  const { minimizeProtection, screenshotProtection } = useSecurity();
   const [routeName, setRouteName] = useState('Login');
 
   const onStateChange = useCallback((state: any) => {
@@ -331,9 +334,8 @@ export default function Navigation() {
   }, [routeName]);
 
   return (
-    <SecurityProvider>
-      <SecurityOverlay routeName={routeName} />
-      <NavigationContainer onStateChange={onStateChange}>
+    <>
+      <NavigationContainer ref={navRef} onStateChange={onStateChange}>
         <Stack.Navigator
           initialRouteName="Login"
           screenOptions={{
@@ -357,14 +359,25 @@ export default function Navigation() {
           <Stack.Screen name="ManagerAttendanceView" component={ManagerAttendanceViewScreen} />
         </Stack.Navigator>
       </NavigationContainer>
+      <SecurityOverlay routeName={routeName} minimizeProtection={minimizeProtection} screenshotProtection={screenshotProtection} />
+    </>
+  );
+}
+
+export default function Navigation() {
+  return (
+    <SecurityProvider>
+      <NavContent />
     </SecurityProvider>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#012FA7',
+    zIndex: 99999,
+    elevation: 99999,
     justifyContent: 'center',
     alignItems: 'center',
   },
