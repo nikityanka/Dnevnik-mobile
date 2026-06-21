@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Image, View, Text, StyleSheet, AppState, AppStateStatus, BackHandler } from 'react-native';
+import { Image, View, Text, StyleSheet, AppState, AppStateStatus, BackHandler, Modal } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -279,15 +279,17 @@ function SecurityOverlay({ routeName }: { routeName: string }) {
     }
   }, [routeName, screenshotProtection]);
 
-  if (!minimizeProtection || !showOverlay || routeName === 'Login') return null;
+  const isVisible = minimizeProtection && showOverlay && routeName !== 'Login';
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.overlayContent}>
-        <Text style={styles.lockIcon}>🔒</Text>
-        <Text style={styles.overlayText}>Защита экрана</Text>
+    <Modal visible={isVisible} transparent={false} animationType="none" statusBarTranslucent>
+      <View style={styles.overlay}>
+        <View style={styles.overlayContent}>
+          <Text style={styles.lockIcon}>🔒</Text>
+          <Text style={styles.overlayText}>Защита экрана</Text>
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 }
 
@@ -361,9 +363,8 @@ export default function Navigation() {
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: '#012FA7',
-    zIndex: 99999,
     justifyContent: 'center',
     alignItems: 'center',
   },
