@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Image, View, Text, StyleSheet, AppState, AppStateStatus } from 'react-native';
+import { Image, View, Text, StyleSheet, AppState, AppStateStatus, BackHandler } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -319,6 +319,15 @@ export default function Navigation() {
     setRouteName(state?.routes?.[state.index]?.name ?? 'Login');
   }, []);
 
+  useEffect(() => {
+    const onBackPress = () => {
+      if (routeName === 'Login' || routeName === 'Home') return true;
+      return false;
+    };
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  }, [routeName]);
+
   return (
     <SecurityProvider>
       <SecurityOverlay routeName={routeName} />
@@ -329,7 +338,7 @@ export default function Navigation() {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="Login" component={AppScreen} />
+          <Stack.Screen name="Login" component={AppScreen} options={{ gestureEnabled: false }} />
 
           <Stack.Screen name="Home" component={RoleBasedNavigator} />
 
